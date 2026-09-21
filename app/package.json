@@ -1,0 +1,22 @@
+{
+  "name": "movienight-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Netflix-style desktop client for movienight (Electron + React)",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "vite build",
+    "start": "npm run build && electron .",
+    "web": "vite"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.2.1",
+    "vite": "^5.4.11"
+  }
+}

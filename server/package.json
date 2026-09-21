@@ -1,0 +1,18 @@
+{
+  "name": "movienight-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Media server for movienight: scans a movie folder, streams videos, writes TMDB metadata sidecars (opt-in).",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test 'test/*.test.js'"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
