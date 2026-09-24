@@ -48,6 +48,8 @@ function createApp({
       imdbId: (info && info.imdbId) || null,
       source: (info && info.source) || null,
       fetchedAt: (info && info.fetchedAt) || null,
+      kind: rec.kind || "film",
+      addedAt: rec.addedAt || null,
       hasInfo: Boolean(info),
       hasPoster: Boolean(poster),
       favorite: favs.has(rec.id),
@@ -81,11 +83,13 @@ function createApp({
 
   app.get("/api/movies", (req, res) => {
     const favoritesOnly = req.query.favorites === "1" || req.query.favorites === "true";
+    const kind = req.query.kind === "series" || req.query.kind === "film" ? req.query.kind : null;
     let recs = lib.list();
     if (favoritesOnly) recs = recs.filter((r) => favs.has(r.id));
-    const movies = recs
-      .map(buildMovie)
-      .sort((a, b) => a.title.localeCompare(b.title));
+    if (kind) recs = recs.filter((r) => (r.kind || "film") === kind);
+    let movies = recs.map(buildMovie);
+    if (req.query.sort === "added") movies.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
+    else movies.sort((a, b) => a.title.localeCompare(b.title));
     res.json({ movies, count: movies.length });
   });
 

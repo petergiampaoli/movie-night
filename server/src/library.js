@@ -33,22 +33,48 @@ function cleanTitle(name) {
   return out || name;
 }
 
+// Heuristic: a file is an "episode" if its name carries an SxxEyy marker.
+const EPISODE_RE = /(?:^|[\s._-])(?:s\d{1,2}\s?e\d{1,3}|e\d{1,3})(?:$|[\s._-])/i;
+
+// Series grouping pass: folders holding 2+ video files are treated as shows
+// (their files are episodes), single-video folders are standalone films.
+function classifyGroups(walked) {
+  const byDir = new Map();
+  for (const rec of walked) {
+    const group = byDir.get(rec.dir) || (byDir.set(rec.dir, []), byDir.get(rec.dir));
+    group.push(rec);
+  }
+  for (const rec of walked) {
+    const siblings = byDir.get(rec.dir) || [rec];
+    const hasEpisodeMarker = EPISODE_RE.test(rec.basename);
+    rec.kind = hasEpisodeMarker || siblings.length > 1 ? "series" : "film";
+  }
+  return walked;
+}
+
 function walk(dirs, base = "") {
-  const found = [];
+  const raw = [];
   let entries;
   try {
     entries = fs.readdirSync(dirs, { withFileTypes: true });
   } catch {
-    return found;
+    return raw;
   }
   entries.sort((a, b) => a.name.localeCompare(b.name));
   for (const entry of entries) {
     if (entry.name.startsWith(".")) continue; // skip hidden dirs incl. .movienight
     const rel = base ? path.join(base, entry.name) : entry.name;
     const full = path.join(dirs, entry.name);
-    if (entry.isDirectory()) found.push(...walk(full, rel));
+    if (entry.isDirectory()) raw.push(...walk(full, rel));
     else if (entry.isFile() && VIDEO_EXTS.includes(path.extname(entry.name).toLowerCase())) {
-      found.push({
+      let addedAt = null;
+      try {
+        const st = fs.statSync(full);
+        addedAt = (st.birthtimeMs || st.mtimeMs) || null;
+      } catch {
+        /* stat may fail for unreadable files */
+      }
+      raw.push({
         srcPath: full,
         relPath: rel,
         id: idFor(rel),
@@ -57,10 +83,11 @@ function walk(dirs, base = "") {
         yearGuess: guessYear(entry.name),
         dir: path.dirname(full),
         ext: path.extname(entry.name).toLowerCase(),
+        addedAt,
       });
     }
   }
-  return found;
+  return classifyGroups(raw);
 }
 
 class Library {

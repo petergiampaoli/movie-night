@@ -14,7 +14,7 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [view, setView] = useState("films"); // films | series | favorites | new
   const [modalMovie, setModalMovie] = useState(null);
   const [playing, setPlaying] = useState(null);
   const [confirm, setConfirm] = useState(null);
@@ -65,7 +65,7 @@ export default function App() {
     if (client) {
       setMovies([]);
       setQuery("");
-      setFavoritesOnly(false);
+      setView("films");
       loadMovies(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -185,12 +185,16 @@ export default function App() {
 
   const openModal = (movie) => setModalMovie(movie);
 
+  const favoritesOnly = view === "favorites";
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = movies;
     if (q) list = list.filter((m) => m.title.toLowerCase().includes(q));
+    if (view === "favorites") list = list.filter((m) => m.favorite);
+    else if (view === "series") list = list.filter((m) => m.kind === "series");
+    else if (view === "new") list = list.slice().sort((x, y) => (y.addedAt||0)-(x.addedAt||0));
     return list;
-  }, [movies, query]);
+  }, [movies, query, view]);
 
   const favorites = useMemo(() => movies.filter((m) => m.favorite), [movies]);
 
@@ -204,12 +208,12 @@ export default function App() {
         conn={conn}
         query={query}
         onQuery={setQuery}
-        favoritesOnly={favoritesOnly}
+        view={view}
         favoriteCount={favorites.length}
-        onToggleFavorites={(next) => {
-          if (next === favoritesOnly) return;
-          setFavoritesOnly(next);
-          loadMovies(next);
+        onSelectView={(next) => {
+          if (next === view) return;
+          setView(next);
+          loadMovies(next === "favorites");
         }}
         onDisconnect={disconnect}
       />
