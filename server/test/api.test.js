@@ -186,3 +186,43 @@ test("stream serves full and ranged responses", async (t) => {
   const bad = await fetch(`${t.baseUrl}/api/movies/${id}/stream`, { headers: { Range: `bytes=${VIDEO_BYTES.length}-` } });
   assert.equal(bad.status, 416);
 });
+test("kind filter returns only films or only series", async (t) => {
+  const movieDir = makeMovieDir([
+    ["Films/Asteroid City (2023).mp4", VIDEO_BYTES],
+    ["Series/The Weekly Show S01E03.mkv", VIDEO_BYTES],
+  ]);
+  await withServer(t, { movieDir });
+  afterCtx(t);
+  assert.equal(t.movies.length, 2);
+
+  const films = (await (await fetch(`${t.baseUrl}/api/movies?kind=film`)).json()).movies;
+  assert.equal(films.length, 1);
+  assert.match(films[0].title, /Asteroid City/i);
+  assert.equal(films[0].kind, "film");
+
+  const series = (await (await fetch(`${t.baseUrl}/api/movies?kind=series`)).json()).movies;
+  assert.equal(series.length, 1);
+  assert.match(series[0].title, /Weekly Show/i);
+  assert.equal(series[0].kind, "series");
+  t.close?.();
+});
+
+test("movies expose kind + addedAt and sort=added is newest-first", async (t) => {
+  const movieDir = makeMovieDir([
+    ["Films/Asteroid City (2023).mp4", VIDEO_BYTES],
+    ["Films/Rushmore (1998).mp4", VIDEO_BYTES],
+  ]);
+  await withServer(t, { movieDir });
+  afterCtx(tắt);
+  assert.equal(t.movies.length, 2);
+  for (const m of t.movies) {
+    assert.equal(m.kind, "film");
+    assert.ok(typeof m.addedAt === "number", "addedAt is a timestamp");
+  }
+
+  const added = (await (await fetch(`${t.baseUrl}/api/movies?sort=added`)).json()).movies;
+  assert.equal(added.length, 2);
+  assert.ok(added[0].addedAt >= added[1].addedAt, "newest file sorts first");
+  t.close?.();
+});
+
