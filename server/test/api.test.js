@@ -208,12 +208,13 @@ test("kind filter returns only films or only series", async (t) => {
 });
 
 test("movies expose kind + addedAt and sort=added is newest-first", async (t) => {
+  // One file per directory: a folder with 2+ siblings is classified as "series".
   const movieDir = makeMovieDir([
-    ["Films/Asteroid City (2023).mp4", VIDEO_BYTES],
-    ["Films/Rushmore (1998).mp4", VIDEO_BYTES],
+    ["a/Asteroid City (2023).mp4", VIDEO_BYTES],
+    ["b/Rushmore (1998).mp4", VIDEO_BYTES],
   ]);
   await withServer(t, { movieDir });
-  afterCtx(tắt);
+  afterCtx(t);
   assert.equal(t.movies.length, 2);
   for (const m of t.movies) {
     assert.equal(m.kind, "film");

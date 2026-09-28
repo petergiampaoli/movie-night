@@ -5,7 +5,7 @@
   "description": "Netflix-style desktop client for movienight (Electron + React)",
   "main": "electron/main.js",
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test test/*.test.mjs",
     "dev": "node scripts/dev.mjs",
     "build": "vite build",
     "start": "npm run build && electron .",
