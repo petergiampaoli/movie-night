@@ -15,3 +15,9 @@ Thumbs.db
 # logs
 *.log
 npm-debug.log*
+
+# e2e / playwright
+app/e2e/fixtures/.data/
+app/test-results/
+app/playwright-report/
+app/.playwright/

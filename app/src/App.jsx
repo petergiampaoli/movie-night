@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
+import { filterByView } from "./viewFilter.mjs";
 import { ConnectScreen } from "./components/ConnectScreen.jsx";
 import { TopBar } from "./components/TopBar.jsx";
 import { MovieCard } from "./components/MovieCard.jsx";
@@ -22,6 +23,8 @@ export default function App() {
   const [error, setError] = useState(null);
 
   const client = useMemo(() => (conn ? api(conn.baseUrl) : null), [conn]);
+
+  const favoritesOnly = view === "favorites";
 
   const notify = useCallback((msg, kind = "ok") => setToast({ msg, kind }), []);
 
@@ -185,16 +188,10 @@ export default function App() {
 
   const openModal = (movie) => setModalMovie(movie);
 
-  const favoritesOnly = view === "favorites";
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let list = movies;
-    if (q) list = list.filter((m) => m.title.toLowerCase().includes(q));
-    if (view === "favorites") list = list.filter((m) => m.favorite);
-    else if (view === "series") list = list.filter((m) => m.kind === "series");
-    else if (view === "new") list = list.slice().sort((x, y) => (y.addedAt||0)-(x.addedAt||0));
-    return list;
-  }, [movies, query, view]);
+  const filtered = useMemo(
+    () => filterByView(movies, view, query),
+    [movies, query, view]
+  );
 
   const favorites = useMemo(() => movies.filter((m) => m.favorite), [movies]);
 
