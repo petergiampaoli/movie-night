@@ -7,9 +7,9 @@
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "test:e2e": "playwright test",
-    "fixtures:gen": "node e2e/fixtures/generate-fixtures.mjs",
+    "demo:data": "node scripts/build-demo-data.mjs",
     "demo": "node scripts/demo.mjs",
-    "demo:server": "MOVIE_DIR=./e2e/fixtures/movies DATA_DIR=./e2e/fixtures/.data PORT=1234 HOST=127.0.0.1 node ../server/src/index.js",
+    "demo:server": "MOVIE_DIR=./demo-data/movies DATA_DIR=./demo-data/.data PORT=1234 HOST=127.0.0.1 node ../server/src/index.js",
     "dev": "node scripts/dev.mjs",
     "build": "vite build",
     "start": "npm run build && electron .",

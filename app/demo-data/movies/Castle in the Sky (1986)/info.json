@@ -1,0 +1,27 @@
+{
+  "title": "Castle in the Sky",
+  "year": 1986,
+  "tagline": "One day, a girl came down from the sky…",
+  "overview": "A young boy and a girl with a magic crystal must race against pirates and foreign agents in a search for a legendary floating castle.",
+  "rating": 8,
+  "voteCount": 4835,
+  "genres": [
+    "Adventure",
+    "Fantasy",
+    "Animation",
+    "Action",
+    "Family"
+  ],
+  "runtime": 125,
+  "directors": [
+    "Hayao Miyazaki"
+  ],
+  "studios": [
+    "Studio Ghibli",
+    "Tokuma Shoten"
+  ],
+  "tmdbId": 10515,
+  "imdbId": "tt0092067",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:36.240Z"
+}

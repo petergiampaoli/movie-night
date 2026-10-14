@@ -1,0 +1,26 @@
+{
+  "title": "The Castle of Cagliostro",
+  "year": 1979,
+  "tagline": "Believe in the Thief.",
+  "overview": "After a successful robbery leaves famed thief Lupin the Third and his partner Jigen with nothing but a large amount of expertly crafted counterfeit bills, he decides to track down the forgers responsible—and steal any other treasures he may find in the Castle of Cagliostro, including the 'damsel in distress' he finds imprisoned there.",
+  "rating": 7.5,
+  "voteCount": 1184,
+  "genres": [
+    "Animation",
+    "Adventure",
+    "Comedy",
+    "Crime"
+  ],
+  "runtime": 102,
+  "directors": [
+    "Hayao Miyazaki"
+  ],
+  "studios": [
+    "Tokyo Movie Shinsha",
+    "Telecom Animation Film"
+  ],
+  "tmdbId": 15371,
+  "imdbId": "tt0079833",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:32.673Z"
+}

@@ -1,0 +1,27 @@
+{
+  "title": "The Grand Budapest Hotel",
+  "year": 2014,
+  "tagline": "A murder case of Madam D. with enormous wealth and the most outrageous events surrounding her sudden death!",
+  "overview": "The Grand Budapest Hotel tells of a legendary concierge at a famous European hotel between the wars and his friendship with a young employee who becomes his trusted protégé. The story involves the theft and recovery of a priceless Renaissance painting, the battle for an enormous family fortune and the slow and then sudden upheavals that transformed Europe during the first half of the 20th century.",
+  "rating": 8,
+  "voteCount": 16602,
+  "genres": [
+    "Comedy",
+    "Drama"
+  ],
+  "runtime": 100,
+  "directors": [
+    "Wes Anderson"
+  ],
+  "studios": [
+    "Fox Searchlight Pictures",
+    "Studio Babelsberg",
+    "Indian Paintbrush",
+    "TSG Entertainment",
+    "American Empirical Pictures"
+  ],
+  "tmdbId": 120467,
+  "imdbId": "tt2278388",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:23.655Z"
+}

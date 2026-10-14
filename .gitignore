@@ -17,7 +17,6 @@ Thumbs.db
 npm-debug.log*
 
 # e2e / playwright
-app/e2e/fixtures/.data/
 app/test-results/
 app/playwright-report/
 app/.playwright/
@@ -26,3 +25,4 @@ app/.playwright/
 .env
 .env.*
 .tmdb_api_key
+app/demo-data/.data/

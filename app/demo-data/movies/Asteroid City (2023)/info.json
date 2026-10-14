@@ -1,0 +1,25 @@
+{
+  "title": "Asteroid City",
+  "year": 2023,
+  "tagline": "\"You can't wake up if you don't fall asleep\"",
+  "overview": "In an American desert town circa 1955, the itinerary of a Junior Stargazer/Space Cadet convention is spectacularly disrupted by world-changing events.",
+  "rating": 6.5,
+  "voteCount": 2665,
+  "genres": [
+    "Comedy",
+    "Drama"
+  ],
+  "runtime": 105,
+  "directors": [
+    "Wes Anderson"
+  ],
+  "studios": [
+    "Indian Paintbrush",
+    "American Empirical Pictures",
+    "Studio Babelsberg"
+  ],
+  "tmdbId": 747188,
+  "imdbId": "tt14230388",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:28.990Z"
+}

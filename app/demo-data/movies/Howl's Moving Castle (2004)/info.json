@@ -1,0 +1,30 @@
+{
+  "title": "Howl's Moving Castle",
+  "year": 2004,
+  "tagline": "Love comes first.",
+  "overview": "Sophie, a young milliner, is turned into an elderly woman by a witch who enters her shop and curses her. She encounters a wizard named Howl and gets caught up in his resistance to fighting for the king.",
+  "rating": 8.4,
+  "voteCount": 11564,
+  "genres": [
+    "Fantasy",
+    "Animation",
+    "Adventure"
+  ],
+  "runtime": 119,
+  "directors": [
+    "Hayao Miyazaki"
+  ],
+  "studios": [
+    "Studio Ghibli",
+    "Tokuma Shoten",
+    "Nippon Television Network Corporation",
+    "dentsu",
+    "Walt Disney Japan",
+    "d-rights",
+    "TOHO"
+  ],
+  "tmdbId": 4935,
+  "imdbId": "tt0347149",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:46.805Z"
+}

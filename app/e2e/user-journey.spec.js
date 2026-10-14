@@ -40,34 +40,31 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
   await connectToServer(page);
   await expect(page.locator(".topbar")).toBeVisible();
 
-  // 3. Browse titles (default "Films" view: Alpha, Bravo, Delta) ------------
-  await expect(page.locator(".grid .card")).toHaveCount(3);
-  const filmTitles = await page.locator(".grid .card .card-title").allInnerTexts();
-  expect(filmTitles.map((s) => s.trim()).sort()).toEqual(["Alpha", "Bravo", "Delta"]);
+  // 3. Browse titles (default "Films" view) -------------------------------
+  await expect(page.locator(".grid .card")).toHaveCount(24);
 
   // 4. Search narrows the grid ----------------------------------------------
-  await page.fill(".search input", "brav");
+  await page.fill(".search input", "totoro");
   await expect(page.locator(".grid .card")).toHaveCount(1);
-  await expect(page.locator(".grid .card .card-title")).toHaveText("Bravo");
+  await expect(page.locator(".grid .card .card-title")).toHaveText("My Neighbor Totoro");
   await page.click(".search .clear");
-  await expect(page.locator(".grid .card")).toHaveCount(3);
+  await expect(page.locator(".grid .card")).toHaveCount(24);
 
   // 5. Switch views from the left accordion sidebar -------------------------
   await selectNav(page, "Series");
-  await expect(page.locator(".grid .card")).toHaveCount(2);
-  await expect(page.locator(".grid .card .card-title").first()).toContainText("Charlie");
+  await expect(page.locator(".grid .card")).toHaveCount(0);
 
   await selectNav(page, "New");
-  await expect(page.locator(".grid .card")).toHaveCount(5); // all titles
+  await expect(page.locator(".grid .card")).toHaveCount(24); // all titles
 
   await selectNav(page, "Films");
-  await expect(page.locator(".grid .card")).toHaveCount(3);
+  await expect(page.locator(".grid .card")).toHaveCount(24);
 
   // 6. Choose a film -> title modal -----------------------------------------
-  await page.locator(".grid .card", { hasText: "Bravo" }).first().click();
+  await page.locator(".grid .card", { hasText: "Spirited Away" }).first().click();
   await expect(page.locator(".modal-backdrop")).toBeVisible();
-  await expect(page.locator(".modal-headline h1")).toHaveText("Bravo");
-  await expect(page.locator(".modal .synopsis")).toContainText("safecracker");
+  await expect(page.locator(".modal-headline h1")).toHaveText("Spirited Away");
+  await expect(page.locator(".modal .synopsis p")).not.toHaveText("");
 
   // 7. Favourite it ----------------------------------------------------------
   await page.click(".modal .btn-fav");
@@ -107,7 +104,7 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
   await expect(page.locator(".modal-backdrop")).toHaveCount(0);
   await selectNav(page, "Favorites");
   await expect(page.locator(".grid .card")).toHaveCount(1);
-  await expect(page.locator(".grid .card .card-title")).toHaveText("Bravo");
+  await expect(page.locator(".grid .card .card-title")).toHaveText("Spirited Away");
   await expect(page.locator(".grid .card .fav-btn")).toHaveClass(/on/);
 });
 
@@ -149,20 +146,27 @@ test("'Choose folder' in a browser opens a folder picker, then guides instead of
 test("'Get movie information' opens a confirm dialog (no blank page) and fails gracefully without a key", async ({ page }) => {
   await resetFavorites();
   await gotoHome(page);
+  await page.route(/\/api\/movies(\?.*)?$/, async (route) => {
+    const res = await route.fetch();
+    const json = await res.json();
+    if (json.movies && json.movies.length > 0) {
+      json.movies[0].hasInfo = false;
+      json.movies[0].hasPoster = false;
+      json.movies[0].posterUrl = null;
+    }
+    await route.fulfill({ response: res, json });
+  });
   await connectToServer(page);
 
-  // Alpha has no metadata, so it offers the "Get movie information" action.
-  const alpha = page.locator(".grid .card", { hasText: "Alpha" }).first();
-  await alpha.locator(".get-info").click();
+  const cardWithGetInfo = page.locator(".grid .card", { has: page.locator(".get-info") }).first();
+  await cardWithGetInfo.locator(".get-info").click();
 
-  // The confirm dialog must render with content, not a blank page.
   const dialog = page.locator(".dialog");
   await expect(dialog).toBeVisible();
   await expect(dialog.locator("h2")).toHaveText("Get movie information");
   await expect(dialog.locator(".dialog-body")).toContainText("TheMovieDB");
   await expect(page.locator(".topbar")).toBeVisible();
 
-  // Confirming without a server TMDB key surfaces an error toast, not a crash.
   await dialog.locator(".btn-primary").click();
   await expect(page.locator(".dialog")).toHaveCount(0);
   await expect(page.locator(".toast-error")).toBeVisible();

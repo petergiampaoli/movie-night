@@ -1,0 +1,27 @@
+{
+  "title": "Kiki's Delivery Service",
+  "year": 1989,
+  "tagline": "I was feeling blue, but I'm better now.",
+  "overview": "A young witch, on her mandatory year of independent life, finds fitting into a new community difficult while she supports herself by running an air courier service.",
+  "rating": 7.8,
+  "voteCount": 4777,
+  "genres": [
+    "Animation",
+    "Family",
+    "Fantasy"
+  ],
+  "runtime": 103,
+  "directors": [
+    "Hayao Miyazaki"
+  ],
+  "studios": [
+    "Studio Ghibli",
+    "Tokuma Shoten",
+    "Nippon Television Network Corporation",
+    "Yamato Transport"
+  ],
+  "tmdbId": 16859,
+  "imdbId": "tt0097814",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:39.739Z"
+}

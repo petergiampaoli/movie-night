@@ -51,8 +51,8 @@ module.exports = defineConfig({
       command: "node server/src/index.js",
       cwd: repoRoot,
       env: {
-        MOVIE_DIR: path.join(appDir, "e2e", "fixtures", "movies"),
-        DATA_DIR: path.join(appDir, "e2e", "fixtures", ".data"),
+        MOVIE_DIR: path.join(appDir, "demo-data", "movies"),
+        DATA_DIR: path.join(appDir, "demo-data", ".data"),
         PORT: String(API_PORT),
         HOST: "127.0.0.1",
         TMDB_API_KEY: "",

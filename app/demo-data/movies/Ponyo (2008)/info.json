@@ -1,0 +1,30 @@
+{
+  "title": "Ponyo",
+  "year": 2008,
+  "tagline": "Welcome to a world where anything is possible.",
+  "overview": "When Sosuke, a young boy who lives on a clifftop overlooking the sea, rescues a stranded goldfish named Ponyo, he discovers more than he bargained for. Ponyo is a curious, energetic young creature who yearns to be human, but even as she causes chaos around the house, her father, a powerful sorcerer, schemes to return Ponyo to the sea.",
+  "rating": 7.763,
+  "voteCount": 5011,
+  "genres": [
+    "Animation",
+    "Fantasy",
+    "Family"
+  ],
+  "runtime": 100,
+  "directors": [
+    "Hayao Miyazaki"
+  ],
+  "studios": [
+    "Studio Ghibli",
+    "TOHO",
+    "Nippon Television Network Corporation",
+    "dentsu",
+    "Hakuhodo DY Media Partners",
+    "Mitsubishi",
+    "Walt Disney Japan"
+  ],
+  "tmdbId": 12429,
+  "imdbId": "tt0876563",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:48.556Z"
+}

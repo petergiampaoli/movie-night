@@ -1,0 +1,28 @@
+{
+  "title": "Porco Rosso",
+  "year": 1992,
+  "tagline": "Can a pig really fly?",
+  "overview": "In Italy in the 1930s, sky pirates in biplanes terrorize wealthy cruise ships as they sail the Adriatic Sea. The only pilot brave enough to stop the scourge is the mysterious Porco Rosso, a former World War I flying ace who was somehow turned into a pig during the war. As he prepares to battle the pirate crew's American ace, Porco Rosso enlists the help of spunky girl mechanic Fio Piccolo and his longtime friend Madame Gina.",
+  "rating": 7.791,
+  "voteCount": 3850,
+  "genres": [
+    "Animation",
+    "Adventure",
+    "Fantasy"
+  ],
+  "runtime": 93,
+  "directors": [
+    "Hayao Miyazaki"
+  ],
+  "studios": [
+    "Studio Ghibli",
+    "Tokuma Shoten",
+    "Nippon Television Network Corporation",
+    "Japan Airlines",
+    "Japan Airlines Cultural Business Center"
+  ],
+  "tmdbId": 11621,
+  "imdbId": "tt0104652",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:41.590Z"
+}

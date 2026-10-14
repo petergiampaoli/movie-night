@@ -110,13 +110,12 @@ test.describe("Design - top bar", () => {
 
   test("Smart Genres accordion expands to the library's six most common genres", async ({ page }) => {
     await openSidebar(page);
-    // Bravo carries [Thriller, Crime]; those become the two most common genres.
     await expandSection(page, "Smart Genres");
     const subs = page.locator(".sidebar .accordion:has(.accordion-head:has-text('Smart Genres')) .sidebar-sub");
     await expect(subs.first()).toBeVisible();
     const labels = await subs.allInnerTexts();
-    expect(labels.join(" ")).toContain("Thriller");
-    expect(labels.join(" ")).toContain("Crime");
+    expect(labels.join(" ")).toContain("Animation");
+    expect(labels.join(" ")).toContain("Comedy");
   });
 });
 
@@ -130,7 +129,7 @@ test.describe("Design - browse grid & cards", () => {
 
   test("cards flow in a grid with 2:3 poster artwork", async ({ page }) => {
     await expect(page.locator(".grid")).toHaveCSS("display", "grid");
-    await expect(page.locator(".grid .card")).toHaveCount(3); // 3 films, series excluded
+    await expect(page.locator(".grid .card")).toHaveCount(24); // all real films
 
     const c0 = await page.locator(".grid .card").nth(0).boundingBox();
     const c1 = await page.locator(".grid .card").nth(1).boundingBox();
@@ -141,15 +140,11 @@ test.describe("Design - browse grid & cards", () => {
     expect(poster.width / poster.height).toBeCloseTo(2 / 3, 1);
   });
 
-  test("title/meta styling, rating star, and the 'No info' chip", async ({ page }) => {
-    const alpha = page.locator(".grid .card", { hasText: "Alpha" }).first();
-    await expect(alpha.locator(".card-title")).toHaveCSS("font-weight", "600");
-    await expect(alpha.locator(".no-info-chip")).toHaveText("No info");
-    expect(alpha).toHaveClass(/card-unmet/);
-
-    const bravo = page.locator(".grid .card", { hasText: "Bravo" }).first();
-    await expect(bravo.locator(".star")).toContainText("★ 8.1");
-    await expect(bravo.locator(".no-info-chip")).toHaveCount(0);
+  test("title/meta styling, rating star, and all real films have info", async ({ page }) => {
+    const spir = page.locator(".grid .card", { hasText: "Spirited Away" }).first();
+    await expect(spir.locator(".card-title")).toHaveCSS("font-weight", "600");
+    await expect(spir.locator(".no-info-chip")).toHaveCount(0);
+    await expect(spir.locator(".star")).toContainText("★ 8.5");
   });
 
   test("favourite button is hidden until hover, pinned top-right, circular", async ({ page }) => {
@@ -188,7 +183,7 @@ test.describe("Design - title modal", () => {
 
   test("opens a centred modal over a full-screen backdrop", async ({ page }) => {
     const vp = page.viewportSize();
-    await page.locator(".grid .card", { hasText: "Bravo" }).first().click();
+    await page.locator(".grid .card", { hasText: "Spirited Away" }).first().click();
 
     const backdrop = page.locator(".modal-backdrop");
     await expect(backdrop).toBeVisible();
@@ -207,7 +202,7 @@ test.describe("Design - title modal", () => {
     expect(poster.x).toBeGreaterThan(mid); // artwork in the right half
     expect(headline.x).toBeLessThan(mid); // info in the left half
 
-    await expect(page.locator(".modal-headline h1")).toHaveText("Bravo");
+    await expect(page.locator(".modal-headline h1")).toHaveText("Spirited Away");
     await expect(page.locator(".modal .actions")).toHaveCSS("display", "flex");
     await expect(page.locator(".modal .btn-play")).toHaveCSS("background-color", "rgb(255, 255, 255)");
     await expect(page.locator(".modal .btn-fav")).toBeVisible();
@@ -224,7 +219,7 @@ test.describe("Design - player", () => {
 
   test("is a full-screen black stage with a titled top bar", async ({ page }) => {
     const vp = page.viewportSize();
-    await page.locator(".grid .card", { hasText: "Bravo" }).first().click();
+    await page.locator(".grid .card", { hasText: "Spirited Away" }).first().click();
     await page.click(".modal .btn-play");
 
     const overlay = page.locator(".player-overlay");
@@ -235,7 +230,7 @@ test.describe("Design - player", () => {
     expect(ob.width).toBeGreaterThanOrEqual(vp.width - 1);
     expect(ob.height).toBeGreaterThanOrEqual(vp.height - 1);
 
-    await expect(page.locator(".player-title")).toHaveText("Bravo");
+    await expect(page.locator(".player-title")).toHaveText("Spirited Away");
     const video = page.locator("video.player-video");
     await expect(video).toBeVisible();
     await expect(video).toHaveAttribute("controls", "");

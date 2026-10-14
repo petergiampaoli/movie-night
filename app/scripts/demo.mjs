@@ -9,6 +9,7 @@
 
 import { spawn } from "node:child_process";
 import net from "node:net";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,6 +18,8 @@ const appRoot = path.join(__dirname, "..");
 const repoRoot = path.join(appRoot, "..");
 
 const API_PORT = 1234;
+const MOVIE_DIR = path.join(appRoot, "demo-data", "movies");
+const DATA_DIR = path.join(appRoot, "demo-data", ".data");
 const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm";
 
 let server = null;
@@ -65,6 +68,14 @@ function portInUse(port) {
 }
 
 async function main() {
+  if (!fs.existsSync(MOVIE_DIR) || fs.readdirSync(MOVIE_DIR).length === 0) {
+    console.error(
+      `\nDemo library not built yet: ${MOVIE_DIR}\n` +
+        "Build it once with:  npm run demo:data   (needs a TMDB_API_KEY)\n"
+    );
+    process.exit(1);
+  }
+
   if (await portInUse(API_PORT)) {
     console.error(`Port ${API_PORT} is already in use. Stop the other server (or the previous demo) and retry.`);
     process.exit(1);
@@ -73,8 +84,8 @@ async function main() {
   server = spawn("node", [path.join(repoRoot, "server", "src", "index.js")], {
     env: {
       ...process.env,
-      MOVIE_DIR: path.join(appRoot, "e2e", "fixtures", "movies"),
-      DATA_DIR: path.join(appRoot, "e2e", "fixtures", ".data"),
+      MOVIE_DIR,
+      DATA_DIR,
       PORT: String(API_PORT),
       HOST: "127.0.0.1",
     },

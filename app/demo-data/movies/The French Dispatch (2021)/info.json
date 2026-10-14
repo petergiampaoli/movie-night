@@ -1,0 +1,25 @@
+{
+  "title": "The French Dispatch of the Liberty, Kansas Evening Sun",
+  "year": 2021,
+  "tagline": "Bringing the world to Kansas, one eccentric story at a time.",
+  "overview": "The staff of an American magazine based in France puts out its last issue, with stories featuring an artist sentenced to life imprisonment, student riots, and a kidnapping resolved by a chef.",
+  "rating": 7,
+  "voteCount": 3128,
+  "genres": [
+    "Drama",
+    "Comedy"
+  ],
+  "runtime": 108,
+  "directors": [
+    "Wes Anderson"
+  ],
+  "studios": [
+    "Indian Paintbrush",
+    "American Empirical Pictures",
+    "Studio Babelsberg"
+  ],
+  "tmdbId": 542178,
+  "imdbId": "tt8847712",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:27.366Z"
+}

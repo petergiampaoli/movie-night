@@ -1,0 +1,32 @@
+{
+  "title": "The Wind Rises",
+  "year": 2013,
+  "tagline": "We must live.",
+  "overview": "A lifelong love of flight inspires Japanese aviation engineer Jiro Horikoshi, whose storied career includes the creation of the A-6M World War II fighter plane.",
+  "rating": 7.8,
+  "voteCount": 3512,
+  "genres": [
+    "Animation",
+    "Drama",
+    "History",
+    "Romance"
+  ],
+  "runtime": 126,
+  "directors": [
+    "Hayao Miyazaki"
+  ],
+  "studios": [
+    "Studio Ghibli",
+    "Nippon Television Network Corporation",
+    "dentsu",
+    "Hakuhodo DY Media Partners",
+    "d-rights",
+    "TOHO",
+    "Walt Disney Japan",
+    "KDDI"
+  ],
+  "tmdbId": 149870,
+  "imdbId": "tt2013293",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-14T04:42:50.192Z"
+}
