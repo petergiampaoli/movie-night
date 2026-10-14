@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export function ConnectScreen({ busy, error, onLocal, onRemote }) {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState("http://127.0.0.1:1234");
 
   const submit = (e) => {
     e.preventDefault();
@@ -13,9 +13,9 @@ export function ConnectScreen({ busy, error, onLocal, onRemote }) {
     <div className="connect-screen">
       <div className="connect-hero">
         <div className="logo logo-big">
-          local<span>flix</span>
+          movie<span>night</span>
         </div>
-        <p className="tagline">A Netflix-style way to watch the movies you already own.</p>
+        <p className="tagline">A private cinema for the films you already own.</p>
       </div>
 
       <div className="connect-panels">

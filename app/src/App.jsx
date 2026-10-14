@@ -1,13 +1,25 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "./api";
-import { filterByView } from "./viewFilter.mjs";
+import { filterMovies, smartCollections, smartGenres, viewCounts } from "./viewFilter.mjs";
 import { ConnectScreen } from "./components/ConnectScreen.jsx";
 import { TopBar } from "./components/TopBar.jsx";
+import { Sidebar } from "./components/Sidebar.jsx";
 import { MovieCard } from "./components/MovieCard.jsx";
 import { MovieModal } from "./components/MovieModal.jsx";
 import { Player } from "./components/Player.jsx";
 import { ConfirmDialog } from "./components/ConfirmDialog.jsx";
 import { Toast } from "./components/Toast.jsx";
+
+const DEFAULT_SELECTION = { type: "view", value: "films" };
+
+function selectionTitle(selection, query) {
+  if (query.trim()) return `Results for “${query}”`;
+  if (!selection) return "Browse";
+  if (selection.type === "director") return selection.value;
+  if (selection.type === "genre") return selection.value;
+  const labels = { films: "Films", series: "Series", new: "New", favorites: "Favorites" };
+  return labels[selection.value] || "Browse";
+}
 
 export default function App() {
   const [conn, setConn] = useState(null); // { baseUrl, source: 'local'|'remote', movieDir }
@@ -15,7 +27,8 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
-  const [view, setView] = useState("films"); // films | series | favorites | new
+  const [selection, setSelection] = useState(DEFAULT_SELECTION);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [modalMovie, setModalMovie] = useState(null);
   const [playing, setPlaying] = useState(null);
   const [confirm, setConfirm] = useState(null);
@@ -24,30 +37,21 @@ export default function App() {
 
   const client = useMemo(() => (conn ? api(conn.baseUrl) : null), [conn]);
 
-  const favoritesOnly = view === "favorites";
-
   const notify = useCallback((msg, kind = "ok") => setToast({ msg, kind }), []);
 
-  const loadMovies = useCallback(
-    async (onlyFavs = favoritesOnly) => {
-      if (!client) return;
-      setLoading(true);
-      try {
-        const data = await client.movies(onlyFavs);
-        setMovies(data.movies || []);
-      } catch (err) {
-        setError(err.message);
-        notify(err.message, "error");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [client, favoritesOnly, notify]
-  );
-
-  // Always keep a latest reference so effects below can hold a stable dep.
-  const moviesRef = useRef(loadMovies);
-  moviesRef.current = loadMovies;
+  const loadMovies = useCallback(async () => {
+    if (!client) return;
+    setLoading(true);
+    try {
+      const data = await client.movies(false);
+      setMovies(data.movies || []);
+    } catch (err) {
+      setError(err.message);
+      notify(err.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [client, notify]);
 
   // Listen for the local server going away (e.g. it crashed or was stopped).
   useEffect(() => {
@@ -63,13 +67,13 @@ export default function App() {
     });
   }, [conn, notify]);
 
-  // Load libary whenever a server is connected.
+  // Load library whenever a server is connected.
   useEffect(() => {
     if (client) {
       setMovies([]);
       setQuery("");
-      setView("films");
-      loadMovies(false);
+      setSelection(DEFAULT_SELECTION);
+      loadMovies();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client]);
@@ -78,10 +82,28 @@ export default function App() {
     setBusy(true);
     setError(null);
     try {
-      const dir = await window.movienight.selectFolder();
-      if (!dir) return;
-      const result = await window.movienight.startLocalServer(dir);
-      setConn({ baseUrl: result.baseUrl, source: "local", movieDir: result.movieDir });
+      if (window.movienight?.selectFolder) {
+        // Desktop app: native folder dialog, then we start the local Node server.
+        const dir = await window.movienight.selectFolder();
+        if (!dir) return;
+        const result = await window.movienight.startLocalServer(dir);
+        setConn({ baseUrl: result.baseUrl, source: "local", movieDir: result.movieDir });
+        return;
+      }
+      // Plain browser: there is no Electron bridge, so a local server can't be
+      // started from the page. Still honour the user's intent to pick a folder,
+      // then explain how to get the full experience.
+      if (window.showDirectoryPicker) {
+        try {
+          await window.showDirectoryPicker();
+        } catch {
+          return; // user cancelled the folder dialog
+        }
+      }
+      setError(
+        "Folder browsing is only available in the desktop app. Run `npm start` for the app, " +
+          "or start the server (`node server/src/index.js`) and use “Connect to a server”."
+      );
     } catch (err) {
       setError(err.message);
     } finally {
@@ -188,12 +210,10 @@ export default function App() {
 
   const openModal = (movie) => setModalMovie(movie);
 
-  const filtered = useMemo(
-    () => filterByView(movies, view, query),
-    [movies, query, view]
-  );
-
-  const favorites = useMemo(() => movies.filter((m) => m.favorite), [movies]);
+  const filtered = useMemo(() => filterMovies(movies, selection, query), [movies, selection, query]);
+  const collections = useMemo(() => smartCollections(movies), [movies]);
+  const genres = useMemo(() => smartGenres(movies, 6), [movies]);
+  const counts = useMemo(() => viewCounts(movies), [movies]);
 
   if (!conn || !client) {
     return <ConnectScreen busy={busy} error={error} onLocal={connectLocal} onRemote={connectRemote} />;
@@ -205,59 +225,60 @@ export default function App() {
         conn={conn}
         query={query}
         onQuery={setQuery}
-        view={view}
-        favoriteCount={favorites.length}
-        onSelectView={(next) => {
-          if (next === view) return;
-          setView(next);
-          loadMovies(next === "favorites");
-        }}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen((v) => !v)}
         onDisconnect={disconnect}
       />
-      <main className="content">
-        {error && (
-          <div className="error-banner">
-            {error}
-            <button onClick={() => setError(null)}>✕</button>
-          </div>
-        )}
-
-        {!loading && movies.length === 0 && (
-          <div className="empty">
-            <h2>No movies here yet</h2>
-            <p>Put video files (.mp4, .mkv, .mov, …) in the scanned folder to get started.</p>
-          </div>
-        )}
-
-        {!favoritesOnly && favorites.length > 0 && (
-          <section>
-            <h2 className="row-title">
-              My Favorites <span className="count-badge">{favorites.length}</span>
-            </h2>
-            <div className="row">
-              {favorites.map((m) => (
-                <MovieCard key={m.id} movie={m} client={client} onOpen={openModal} onGetInfo={askForMeta} onToggleFavorite={toggleFavorite} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        <section className="library-section">
-          <h2 className="row-title">
-            {favoritesOnly ? "Favorites" : query.trim() ? `Results for “${query}”` : "Browse"}
-            <span className="count-badge">{filtered.length}</span>
-          </h2>
-          {filtered.length === 0 && !loading ? (
-            <p className="dim">Nothing matches.</p>
-          ) : (
-            <div className="grid">
-              {filtered.map((m) => (
-                <MovieCard key={m.id} movie={m} client={client} onOpen={openModal} onGetInfo={askForMeta} onToggleFavorite={toggleFavorite} />
-              ))}
+      <div className="app-body">
+        <Sidebar
+          open={sidebarOpen}
+          selection={selection}
+          onSelect={setSelection}
+          counts={counts}
+          collections={collections}
+          genres={genres}
+        />
+        <main className="content">
+          {error && (
+            <div className="error-banner">
+              {error}
+              <button onClick={() => setError(null)}>✕</button>
             </div>
           )}
-        </section>
-      </main>
+
+          {!loading && movies.length === 0 && (
+            <div className="empty">
+              <h2>No movies here yet</h2>
+              <p>Put video files (.mp4, .mkv, .mov, …) in the scanned folder to get started.</p>
+            </div>
+          )}
+
+          {movies.length > 0 && (
+            <section className="library-section">
+              <h2 className="row-title">
+                {selectionTitle(selection, query)}
+                <span className="count-badge">{filtered.length}</span>
+              </h2>
+              {filtered.length === 0 && !loading ? (
+                <p className="dim">Nothing matches.</p>
+              ) : (
+                <div className="grid">
+                  {filtered.map((m) => (
+                    <MovieCard
+                      key={m.id}
+                      movie={m}
+                      client={client}
+                      onOpen={openModal}
+                      onGetInfo={askForMeta}
+                      onToggleFavorite={toggleFavorite}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+        </main>
+      </div>
 
       {modalMovie && (
         <MovieModal
@@ -273,7 +294,9 @@ export default function App() {
 
       {playing && <Player movie={playing} client={client} onClose={() => setPlaying(null)} />}
 
-      {confirm && <ConfirmDialog {...confirm} />}
+      {confirm && (
+        <ConfirmDialog state={confirm} onCancel={confirm.onCancel} onConfirm={confirm.onConfirm} />
+      )}
       {toast && <Toast toast={toast} onDone={() => setToast(null)} />}
     </div>
   );

@@ -46,7 +46,7 @@ class Tmdb {
   }
 
   async detail(id) {
-    return this._get(`/movie/${id}`);
+    return this._get(`/movie/${id}`, { append_to_response: "credits" });
   }
 
   async fetchInfo(title, year) {
@@ -54,6 +54,10 @@ class Tmdb {
     if (!tmdbId) return null;
     const d = await this.detail(tmdbId);
     const releaseYear = (d.release_date || "").slice(0, 4);
+    const directors = ((d.credits && d.credits.crew) || [])
+      .filter((c) => c.job === "Director")
+      .map((c) => c.name);
+    const studios = (d.production_companies || []).map((c) => c.name);
     return {
       title: d.title || title,
       year: releaseYear || year || null,
@@ -63,6 +67,8 @@ class Tmdb {
       voteCount: typeof d.vote_count === "number" ? d.vote_count : null,
       genres: (d.genres || []).map((g) => g.name),
       runtime: typeof d.runtime === "number" ? d.runtime : null,
+      directors,
+      studios,
       tmdbId: d.id || null,
       imdbId: d.imdb_id || null,
       posterPath: d.poster_path || null,

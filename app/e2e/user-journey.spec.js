@@ -10,8 +10,8 @@ const {
   resetFavorites,
   gotoHome,
   connectToServer,
-  selectView,
-  openMenu,
+  selectNav,
+  openSidebar,
   videoPaused,
 } = require("./helpers");
 
@@ -33,7 +33,7 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
 
   // 1. Home screen -----------------------------------------------------------
   await gotoHome(page);
-  await expect(page.locator(".logo-big")).toContainText("localflix");
+  await expect(page.locator(".logo-big")).toContainText("movienight");
   await expect(page.locator(".connect-card")).toHaveCount(2);
 
   // 2. Connect to the media server ------------------------------------------
@@ -52,15 +52,15 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
   await page.click(".search .clear");
   await expect(page.locator(".grid .card")).toHaveCount(3);
 
-  // 5. Switch views from the hamburger menu ---------------------------------
-  await selectView(page, "Series");
+  // 5. Switch views from the left accordion sidebar -------------------------
+  await selectNav(page, "Series");
   await expect(page.locator(".grid .card")).toHaveCount(2);
   await expect(page.locator(".grid .card .card-title").first()).toContainText("Charlie");
 
-  await selectView(page, "Newly Added");
+  await selectNav(page, "New");
   await expect(page.locator(".grid .card")).toHaveCount(5); // all titles
 
-  await selectView(page, "Films");
+  await selectNav(page, "Films");
   await expect(page.locator(".grid .card")).toHaveCount(3);
 
   // 6. Choose a film -> title modal -----------------------------------------
@@ -105,7 +105,7 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
   // 12. The favourite persisted into the Favorites view ----------------------
   await page.click(".modal-close");
   await expect(page.locator(".modal-backdrop")).toHaveCount(0);
-  await selectView(page, "Favorites");
+  await selectNav(page, "Favorites");
   await expect(page.locator(".grid .card")).toHaveCount(1);
   await expect(page.locator(".grid .card .card-title")).toHaveText("Bravo");
   await expect(page.locator(".grid .card .fav-btn")).toHaveClass(/on/);
@@ -127,4 +127,44 @@ test("the app rejects an unreachable server with an inline error", async ({ page
   await page.click('.connect-panels button[type="submit"]');
   await expect(page.locator(".connect-error")).toBeVisible();
   await expect(page.locator(".topbar")).toHaveCount(0);
+});
+
+test("'Choose folder' in a browser opens a folder picker, then guides instead of crashing", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__chooseFolderCalls = 0;
+    window.showDirectoryPicker = () => {
+      window.__chooseFolderCalls += 1;
+      return Promise.resolve({ name: "MovieFolder" });
+    };
+  });
+  await gotoHome(page);
+  await page.click('.connect-card:has-text("Browse a local folder") .btn-primary');
+
+  await expect.poll(() => page.evaluate(() => window.__chooseFolderCalls)).toBe(1);
+  await expect(page.locator(".connect-error")).toBeVisible();
+  await expect(page.locator(".connect-error")).toContainText("desktop app");
+  await expect(page.locator(".topbar")).toHaveCount(0);
+});
+
+test("'Get movie information' opens a confirm dialog (no blank page) and fails gracefully without a key", async ({ page }) => {
+  await resetFavorites();
+  await gotoHome(page);
+  await connectToServer(page);
+
+  // Alpha has no metadata, so it offers the "Get movie information" action.
+  const alpha = page.locator(".grid .card", { hasText: "Alpha" }).first();
+  await alpha.locator(".get-info").click();
+
+  // The confirm dialog must render with content, not a blank page.
+  const dialog = page.locator(".dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator("h2")).toHaveText("Get movie information");
+  await expect(dialog.locator(".dialog-body")).toContainText("TheMovieDB");
+  await expect(page.locator(".topbar")).toBeVisible();
+
+  // Confirming without a server TMDB key surfaces an error toast, not a crash.
+  await dialog.locator(".btn-primary").click();
+  await expect(page.locator(".dialog")).toHaveCount(0);
+  await expect(page.locator(".toast-error")).toBeVisible();
+  await expect(page.locator(".toast-error")).toContainText("TMDB_API_KEY");
 });

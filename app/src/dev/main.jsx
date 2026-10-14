@@ -6,7 +6,7 @@
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { MovieCard } from "./../components/MovieCard.jsx";
-import { filterByView } from "./../viewFilter.mjs";
+import { filterMovies } from "./../viewFilter.mjs";
 import { SEED_FILMS, SEED_FILM_COUNT } from "./seedMovies.mjs";
 import "./../style.css";
 
@@ -21,7 +21,7 @@ const VIEWS = [
   ["films", "Films"],
   ["series", "Series"],
   ["favorites", "Favorites"],
-  ["new", "Newly added"],
+  ["new", "New"],
 ];
 
 function DevSeedGallery() {
@@ -32,7 +32,10 @@ function DevSeedGallery() {
   const toggleFavorite = (movie) =>
     setFilms((list) => list.map((m) => (m.id === movie.id ? { ...m, favorite: !m.favorite } : m)));
 
-  const visible = useMemo(() => filterByView(films, view, query), [films, view, query]);
+  const visible = useMemo(
+    () => filterMovies(films, { type: "view", value: view }, query),
+    [films, view, query]
+  );
   const favoriteCount = films.filter((m) => m.favorite).length;
 
   return (
@@ -88,7 +91,7 @@ function DevSeedGallery() {
 }
 
 function label(view) {
-  return { films: "Films", series: "Series", favorites: "Favorites", new: "Newly added" }[view] || "Films";
+  return { films: "Films", series: "Series", favorites: "Favorites", new: "New" }[view] || "Films";
 }
 
 createRoot(document.getElementById("root")).render(

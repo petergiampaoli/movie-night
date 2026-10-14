@@ -21,3 +21,8 @@ app/e2e/fixtures/.data/
 app/test-results/
 app/playwright-report/
 app/.playwright/
+
+# local secrets
+.env
+.env.*
+.tmdb_api_key

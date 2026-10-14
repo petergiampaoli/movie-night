@@ -44,6 +44,8 @@ function createApp({
       voteCount: (info && info.voteCount) || null,
       genres: (info && info.genres) || [],
       runtime: (info && info.runtime) || null,
+      directors: (info && info.directors) || [],
+      studios: (info && info.studios) || [],
       tmdbId: (info && info.tmdbId) || null,
       imdbId: (info && info.imdbId) || null,
       source: (info && info.source) || null,

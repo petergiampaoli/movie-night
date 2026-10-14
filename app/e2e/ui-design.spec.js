@@ -5,7 +5,7 @@
 // regression in layout or theme colours fails the build.
 
 const { test, expect } = require("@playwright/test");
-const { gotoHome, openLibrary, openMenu, VIEW_LABELS } = require("./helpers");
+const { gotoHome, openLibrary, openSidebar, expandSection, NAV_ITEMS, SMART_SECTIONS } = require("./helpers");
 
 // ---------------------------------------------------------------------------
 // Home / connect screen
@@ -21,9 +21,9 @@ test.describe("Design - home (connect screen)", () => {
     expect(Math.abs(hero.x + hero.width / 2 - vp.width / 2)).toBeLessThanOrEqual(2);
 
     const logo = page.locator(".logo-big");
-    await expect(logo).toContainText("localflix");
+    await expect(logo).toContainText("movienight");
     await expect(logo).toHaveCSS("font-size", "56px");
-    await expect(logo).toHaveCSS("color", "rgb(229, 9, 20)"); // --accent
+    await expect(logo).toHaveCSS("color", "rgb(46, 125, 50)"); // --accent (deep forest green)
     await expect(logo.locator("span")).toHaveCSS("color", "rgb(255, 255, 255)");
   });
 
@@ -40,15 +40,21 @@ test.describe("Design - home (connect screen)", () => {
     await expect(cards.nth(1)).toContainText("Connect to a server");
   });
 
-  test("primary buttons use the red accent and rounded corners", async ({ page }) => {
+  test("primary buttons use the forest-green accent and rounded corners", async ({ page }) => {
     const btn = page.locator(".connect-card .btn-primary").first();
-    await expect(btn).toHaveCSS("background-color", "rgb(229, 9, 20)");
+    await expect(btn).toHaveCSS("background-color", "rgb(46, 125, 50)");
     await expect(btn).toHaveCSS("border-radius", "10px");
+  });
+
+  test("the server field is pre-filled with the dummy test port 1234", async ({ page }) => {
+    const field = page.locator(".url-input");
+    await expect(field).toHaveValue("http://127.0.0.1:1234");
+    await expect(page.locator('.connect-card:has-text("Connect to a server") button[type="submit"]')).toBeEnabled();
   });
 });
 
 // ---------------------------------------------------------------------------
-// Top bar shell + hamburger menu
+// Top bar shell + left accordion sidebar
 // ---------------------------------------------------------------------------
 test.describe("Design - top bar", () => {
   test.beforeEach(async ({ page }) => {
@@ -69,37 +75,48 @@ test.describe("Design - top bar", () => {
     await expect(page.locator(".topbar-right .btn-ghost")).toHaveText("Disconnect");
   });
 
-  test("hamburger precedes the logo and drops a panel directly below itself", async ({ page }) => {
-    const ham = page.locator(".hamburger");
-    const hamBox = await ham.boundingBox();
+  test("sidebar toggle sits left of the logo and slides the accordion open/closed", async ({ page }) => {
+    const toggle = page.locator(".sidebar-toggle");
+    const toggleBox = await toggle.boundingBox();
     const logo = await page.locator(".logo").boundingBox();
-    expect(hamBox.x).toBeLessThan(logo.x);
+    expect(toggleBox.x).toBeLessThan(logo.x);
 
-    await expect(ham).toHaveAttribute("aria-expanded", "false");
-    await ham.click();
-    await expect(ham).toHaveAttribute("aria-expanded", "true");
+    const sidebar = page.locator(".sidebar");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(sidebar).toHaveClass(/open/);
+    const openWidth = (await sidebar.boundingBox()).width;
+    expect(openWidth).toBeGreaterThanOrEqual(240);
 
-    const menu = page.locator(".hamburger-menu");
-    await expect(menu).toBeVisible();
-    const menuBox = await menu.boundingBox();
-    expect(menuBox.y).toBeGreaterThanOrEqual(hamBox.y + hamBox.height); // below
-    expect(Math.abs(menuBox.x - hamBox.x)).toBeLessThanOrEqual(2); // left-aligned
-    expect(menuBox.width).toBeGreaterThanOrEqual(230); // min-width
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(sidebar).not.toHaveClass(/open/);
+    await expect.poll(async () => (await sidebar.boundingBox()).width).toBeLessThan(openWidth);
   });
 
-  test("menu lists the four views in order with icons; active item is accented", async ({ page }) => {
-    await openMenu(page);
-    const items = page.locator(".menu-item");
-    await expect(items).toHaveCount(4);
-
-    for (let i = 0; i < VIEW_LABELS.length; i += 1) {
-      await expect(items.nth(i)).toContainText(VIEW_LABELS[i]);
-      await expect(items.nth(i).locator(".menu-icon")).toBeVisible();
+  test("sidebar lists the nav items and the two smart accordion sections", async ({ page }) => {
+    await openSidebar(page);
+    for (const label of NAV_ITEMS) {
+      await expect(page.locator(`.sidebar .nav-item:has-text("${label}")`)).toBeVisible();
+    }
+    for (const label of SMART_SECTIONS) {
+      await expect(page.locator(`.sidebar .accordion-head:has-text("${label}")`)).toBeVisible();
     }
 
-    // Default view is "Films", so the first item is the active one.
-    await expect(items.nth(0)).toHaveClass(/active/);
-    await expect(items.nth(0)).toHaveCSS("color", "rgb(229, 9, 20)");
+    // The default view (Films) is accented in forest green.
+    const films = page.locator('.sidebar .nav-item:has-text("Films")');
+    await expect(films).toHaveClass(/active/);
+    await expect(films).toHaveCSS("color", "rgb(56, 160, 62)"); // --accent-hover
+  });
+
+  test("Smart Genres accordion expands to the library's six most common genres", async ({ page }) => {
+    await openSidebar(page);
+    // Bravo carries [Thriller, Crime]; those become the two most common genres.
+    await expandSection(page, "Smart Genres");
+    const subs = page.locator(".sidebar .accordion:has(.accordion-head:has-text('Smart Genres')) .sidebar-sub");
+    await expect(subs.first()).toBeVisible();
+    const labels = await subs.allInnerTexts();
+    expect(labels.join(" ")).toContain("Thriller");
+    expect(labels.join(" ")).toContain("Crime");
   });
 });
 
@@ -182,6 +199,13 @@ test.describe("Design - title modal", () => {
 
     const modal = await page.locator(".modal").boundingBox();
     expect(Math.abs(modal.x + modal.width / 2 - vp.width / 2)).toBeLessThanOrEqual(2);
+
+    // The info card is flipped: poster on the RIGHT, headline/info on the LEFT.
+    const poster = await page.locator(".modal-poster").boundingBox();
+    const headline = await page.locator(".modal-headline").boundingBox();
+    const mid = modal.x + modal.width / 2;
+    expect(poster.x).toBeGreaterThan(mid); // artwork in the right half
+    expect(headline.x).toBeLessThan(mid); // info in the left half
 
     await expect(page.locator(".modal-headline h1")).toHaveText("Bravo");
     await expect(page.locator(".modal .actions")).toHaveCSS("display", "flex");

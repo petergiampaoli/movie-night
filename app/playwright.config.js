@@ -55,6 +55,7 @@ module.exports = defineConfig({
         DATA_DIR: path.join(appDir, "e2e", "fixtures", ".data"),
         PORT: String(API_PORT),
         HOST: "127.0.0.1",
+        TMDB_API_KEY: "",
       },
       url: `${API_URL}/api/healthz`,
       reuseExistingServer: false,

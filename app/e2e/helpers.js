@@ -38,17 +38,37 @@ async function openLibrary(page) {
   await connectToServer(page);
 }
 
-const VIEW_LABELS = ["Films", "Series", "Favorites", "Newly Added"];
+const NAV_ITEMS = ["Films", "Series", "New", "Favorites"];
+const SMART_SECTIONS = ["Smart Collections", "Smart Genres"];
 
-async function openMenu(page) {
-  await page.click(".hamburger");
-  await expect(page.locator(".hamburger-menu")).toBeVisible();
+// The sidebar is open by default; make sure it is before interacting.
+async function openSidebar(page) {
+  const toggle = page.locator(".sidebar-toggle");
+  if ((await toggle.getAttribute("aria-expanded")) !== "true") await toggle.click();
+  await expect(page.locator(".sidebar.open")).toBeVisible();
 }
 
-async function selectView(page, label) {
-  await openMenu(page);
-  await page.click(`.menu-item:has-text("${label}")`);
-  await expect(page.locator(".hamburger-menu")).toHaveCount(0);
+async function toggleSidebar(page) {
+  await page.click(".sidebar-toggle");
+}
+
+// Click a top-level sidebar entry (Films / Series / New / Favorites).
+async function selectNav(page, label) {
+  await openSidebar(page);
+  await page.click(`.sidebar .nav-item:has-text("${label}")`);
+}
+
+// Click an entry inside an accordion section (a director or genre).
+async function selectSub(page, label) {
+  await openSidebar(page);
+  await page.click(`.sidebar .sidebar-sub:has-text("${label}")`);
+}
+
+async function expandSection(page, title) {
+  await openSidebar(page);
+  const head = page.locator(`.sidebar .accordion-head:has-text("${title}")`);
+  const expanded = await head.getAttribute("aria-expanded");
+  if (expanded !== "true") await head.click();
 }
 
 // Play/pause state of the player video.
@@ -61,12 +81,16 @@ function videoPaused(page) {
 
 module.exports = {
   API_URL,
-  VIEW_LABELS,
+  NAV_ITEMS,
+  SMART_SECTIONS,
   resetFavorites,
   gotoHome,
   connectToServer,
   openLibrary,
-  openMenu,
-  selectView,
+  openSidebar,
+  toggleSidebar,
+  selectNav,
+  selectSub,
+  expandSection,
   videoPaused,
 };
