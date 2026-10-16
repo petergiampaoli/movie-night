@@ -41,6 +41,7 @@ export function MovieCard({ movie, client, onOpen, onGetInfo, onToggleFavorite }
           </div>
         )}
         <div className="card-hover-play">▶ Play</div>
+        {movie.kind === "series" && <span className="series-chip">Series</span>}
       </div>
 
       <div className="card-meta">
@@ -49,6 +50,7 @@ export function MovieCard({ movie, client, onOpen, onGetInfo, onToggleFavorite }
         </div>
         <div className="card-sub">
           {movie.year || "—"}
+          {movie.kind === "series" && <span className="ep-count">{(movie.episodes || []).length} ep</span>}
           {movie.rating != null && <span className="star">★ {movie.rating.toFixed(1)}</span>}
           {!movie.hasInfo && <span className="no-info-chip">No info</span>}
         </div>

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, onGetInfo }) {
+export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, onGetInfo, onViewEpisodes }) {
   const backdropRef = useRef(null);
 
   useEffect(() => {
@@ -63,7 +63,10 @@ export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, o
             <h1>{m.title}</h1>
             <div className="meta-line">
               <span className="year">{m.year || "—"}</span>
-              {m.runtime ? <span>{Math.round(m.runtime)} min</span> : null}
+              {m.kind === "series" && <span className="kind-badge">Series</span>}
+              {m.kind === "series"
+                ? <span>{(m.episodes || []).length} episodes</span>
+                : m.runtime ? <span>{Math.round(m.runtime)} min</span> : null}
               {m.genres?.length ? <span className="genres">{m.genres.join(", ")}</span> : null}
             </div>
           </div>
@@ -71,9 +74,15 @@ export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, o
 
         <div className="modal-body">
           <div className="actions">
-            <button className="btn btn-play" onClick={() => onPlay(m)} disabled={!m.streamUrl}>
-              ▶ Play
-            </button>
+            {m.kind === "series" ? (
+              <button className="btn btn-play" onClick={() => onViewEpisodes(m)} disabled={!(m.episodes || []).length}>
+                ▶ View all episodes
+              </button>
+            ) : (
+              <button className="btn btn-play" onClick={() => onPlay(m)} disabled={!m.streamUrl}>
+                ▶ Play
+              </button>
+            )}
             <button className={`btn btn-fav ${m.favorite ? "on" : ""}`} onClick={onToggleFavorite}>
               {m.favorite ? "♥ In Favorites" : "♡ Save to Favorites"}
             </button>
@@ -120,6 +129,31 @@ export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, o
             </div>
           ) : (
             <p className="dim">No synopsis yet.</p>
+          )}
+
+          {m.kind === "series" && (m.episodes || []).length > 0 && (
+            <div className="episodes-section">
+              <div className="episodes-section-head">
+                <h3>Episodes</h3>
+                <span className="muted">{m.episodes.length} total</span>
+              </div>
+              <ul className="ep-preview">
+                {m.episodes.slice(0, 4).map((ep) => (
+                  <li key={ep.id} className="ep-preview-row">
+                    <span className="ep-code">
+                      S{ep.season}E{ep.episode}
+                    </span>
+                    <span className="ep-name">{ep.title}</span>
+                  </li>
+                ))}
+              </ul>
+              {m.episodes.length > 4 && (
+                <p className="dim">+{m.episodes.length - 4} more episodes</p>
+              )}
+              <button className="btn btn-ghost" onClick={() => onViewEpisodes(m)}>
+                View all episodes
+              </button>
+            </div>
           )}
 
           <div className="file-info">

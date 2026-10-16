@@ -449,6 +449,19 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-
   background: linear-gradient(#000, transparent);
 }
 .player-title { font-weight: 700; font-size: 16px; }
+.player-close {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--stroke);
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+.player-close:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 .player-stage { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 24px 24px; }
 .player-video { width: 100%; max-height: calc(100vh - 90px); background: #000; }
 .player-error {
@@ -531,34 +544,63 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-
   flex: none;
 }
 
+/* Floating menu icon: pinned halfway down the window, attached to the right
+   edge of the menu. Slides between the screen edge (closed) and the menu's
+   right edge (open); hamburger bars become a left-pointing chevron when open. */
 .sidebar-toggle {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 40;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius);
-  cursor: pointer;
   align-items: center;
-  flex: none;
-  transition: background 0.14s ease;
+  gap: 4px;
+  width: 44px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--stroke);
+  border-left: none;
+  background: var(--card);
+  color: var(--text);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  cursor: pointer;
+  transition: left 0.22s ease, background 0.14s ease;
 }
 .sidebar-toggle:hover { background: var(--accent-soft); }
+.sidebar-toggle.open { left: var(--sidebar-w); }
 .sidebar-toggle .bar {
   display: block;
   width: 20px;
   height: 2px;
-  background: var(--text);
+  background: currentColor;
   border-radius: 2px;
 }
+.sidebar-toggle .chev {
+  font-size: 26px;
+  line-height: 1;
+  margin-top: -4px;
+}
+
+/* Dims the rest of the window while the menu is open; clicking it closes. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.scrim.show { opacity: 1; pointer-events: auto; }
 
 .app-body { display: flex; align-items: flex-start; }
 
 .sidebar {
+  position: relative;
+  z-index: 30;
   flex: none;
   width: 0;
   overflow: hidden;
@@ -657,3 +699,118 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-
 .sidebar-sub:hover { background: var(--accent-soft); color: var(--text); }
 .sidebar-sub.active { color: var(--accent-hover); font-weight: 600; background: var(--accent-soft); }
 .sidebar-empty { color: var(--muted); font-size: 12px; padding: 4px 12px 8px; margin: 0; }
+
+/* ---------- series + episodes ---------- */
+.kind-badge {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.series-chip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ep-count { color: var(--accent-hover); font-weight: 600; }
+
+/* Episodes preview inside the movie modal. */
+.episodes-section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--stroke);
+}
+.episodes-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.episodes-section-head h3 { margin: 0; font-size: 16px; }
+.ep-preview { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ep-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+.ep-code {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-hover);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Full-screen episode browser. Sits above the modal (50) but below the player (60). */
+.episodes-view {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  animation: modal-in 0.18s ease;
+}
+.episodes-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--stroke);
+  background: var(--bg-soft);
+}
+.episodes-heading { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.episodes-series { font-weight: 700; font-size: 18px; }
+.episodes-body { flex: 1; overflow-y: auto; padding: 22px; width: min(920px, 100%); margin: 0 auto; }
+.ep-season { margin-bottom: 26px; }
+.ep-season-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.ep-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ep-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--bg-soft);
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+.ep-row:hover { border-color: var(--accent); background: var(--accent-soft); }
+.ep-play {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+.ep-play:hover { background: var(--accent-hover); }
+.ep-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ep-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.ep-name { font-weight: 600; font-size: 14px; }
+.ep-overview { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }

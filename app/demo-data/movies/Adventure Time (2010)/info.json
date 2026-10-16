@@ -1,0 +1,70 @@
+{
+  "title": "Adventure Time",
+  "year": 2010,
+  "kind": "series",
+  "tagline": "They’re not righteous, they’re wrongteous!",
+  "overview": "Young Finn and his shape-shifting dog buddy, Jake, go on a series of surreal adventures as they journey through the postapocalyptic Land of Ooo.",
+  "rating": 8.506,
+  "voteCount": 3236,
+  "genres": [
+    "Animation",
+    "Comedy",
+    "Sci-Fi & Fantasy"
+  ],
+  "runtime": 11,
+  "directors": [
+    "Pendleton Ward"
+  ],
+  "studios": [
+    "Frederator Studios",
+    "Cartoon Network Studios"
+  ],
+  "tmdbId": 15260,
+  "imdbId": "tt1305826",
+  "source": "tmdb",
+  "fetchedAt": "2026-10-16T02:45:53.389Z",
+  "episodes": [
+    {
+      "season": 1,
+      "episode": 1,
+      "title": "Slumber Party Panic",
+      "overview": "Finn and Princess Bubblegum must protect the Candy Kingdom from a horde of candy zombies they accidentally created.",
+      "airDate": "2010-04-05"
+    },
+    {
+      "season": 1,
+      "episode": 2,
+      "title": "Trouble in Lumpy Space",
+      "overview": "Finn must travel to Lumpy Space to find a cure that will save Jake, who was accidentally bitten by Lumpy Space Princess at a tea party.",
+      "airDate": "2010-04-05"
+    },
+    {
+      "season": 1,
+      "episode": 3,
+      "title": "Prisoners of Love",
+      "overview": "When the Ice King kidnaps a number of princesses he sees as potential brides, Finn and Jake team with the prisoners to set everybody free.",
+      "airDate": "2010-04-12"
+    },
+    {
+      "season": 2,
+      "episode": 1,
+      "title": "It Came from the Nightosphere",
+      "overview": "Marceline's evil father goes on a soul-sucking rampage after Finn and Marceline accidentally release him from the Nightosphere.",
+      "airDate": "2010-10-11"
+    },
+    {
+      "season": 2,
+      "episode": 2,
+      "title": "The Eyes",
+      "overview": "Finn and Jake try to rid themselves of a weird horse that creeps them out.",
+      "airDate": "2010-10-18"
+    },
+    {
+      "season": 2,
+      "episode": 3,
+      "title": "Loyalty to the King",
+      "overview": "Finn and Jake are excited to meet the Nice King who has come to Ooo. They soon realize that he looks suspiciously like someone else they know; the Ice King.",
+      "airDate": "2010-10-25"
+    }
+  ]
+}

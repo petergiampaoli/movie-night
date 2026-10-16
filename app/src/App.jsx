@@ -4,8 +4,10 @@ import { filterMovies, smartCollections, smartGenres, viewCounts } from "./viewF
 import { ConnectScreen } from "./components/ConnectScreen.jsx";
 import { TopBar } from "./components/TopBar.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
+import { SidebarToggle } from "./components/SidebarToggle.jsx";
 import { MovieCard } from "./components/MovieCard.jsx";
 import { MovieModal } from "./components/MovieModal.jsx";
+import { EpisodesView } from "./components/EpisodesView.jsx";
 import { Player } from "./components/Player.jsx";
 import { ConfirmDialog } from "./components/ConfirmDialog.jsx";
 import { Toast } from "./components/Toast.jsx";
@@ -28,8 +30,9 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [selection, setSelection] = useState(DEFAULT_SELECTION);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalMovie, setModalMovie] = useState(null);
+  const [episodesView, setEpisodesView] = useState(null);
   const [playing, setPlaying] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState(null);
@@ -61,6 +64,7 @@ export default function App() {
         setConn(null);
         setMovies([]);
         setModalMovie(null);
+        setEpisodesView(null);
         setPlaying(null);
         notify("Local server stopped", "error");
       }
@@ -146,6 +150,7 @@ export default function App() {
     setConn(null);
     setMovies([]);
     setModalMovie(null);
+    setEpisodesView(null);
     setPlaying(null);
   };
 
@@ -210,6 +215,15 @@ export default function App() {
 
   const openModal = (movie) => setModalMovie(movie);
 
+  const openEpisodes = (series) => setEpisodesView(series);
+
+  const playEpisode = (episode, series) =>
+    setPlaying({
+      ...episode,
+      title: `${series.title} · S${episode.season}E${episode.episode} · ${episode.title}`,
+      posterUrl: series.posterUrl,
+    });
+
   const filtered = useMemo(() => filterMovies(movies, selection, query), [movies, selection, query]);
   const collections = useMemo(() => smartCollections(movies), [movies]);
   const genres = useMemo(() => smartGenres(movies, 6), [movies]);
@@ -221,13 +235,12 @@ export default function App() {
 
   return (
     <div className="app">
-      <TopBar
-        conn={conn}
-        query={query}
-        onQuery={setQuery}
-        sidebarOpen={sidebarOpen}
-        onToggleSidebar={() => setSidebarOpen((v) => !v)}
-        onDisconnect={disconnect}
+      <TopBar conn={conn} query={query} onQuery={setQuery} onDisconnect={disconnect} />
+      <SidebarToggle open={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
+      <div
+        className={"scrim" + (sidebarOpen ? " show" : "")}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
       />
       <div className="app-body">
         <Sidebar
@@ -289,6 +302,16 @@ export default function App() {
           onToggleFavorite={() => toggleFavorite(modalMovie)}
           onUpdate={setModalMovie}
           onGetInfo={askForMeta}
+          onViewEpisodes={openEpisodes}
+        />
+      )}
+
+      {episodesView && (
+        <EpisodesView
+          series={episodesView}
+          client={client}
+          onClose={() => setEpisodesView(null)}
+          onPlay={playEpisode}
         />
       )}
 

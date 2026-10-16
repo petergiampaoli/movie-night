@@ -1,28 +1,10 @@
-export function TopBar({
-  conn,
-  query,
-  onQuery,
-  sidebarOpen,
-  onToggleSidebar,
-  onDisconnect,
-}) {
+export function TopBar({ conn, query, onQuery, onDisconnect }) {
   const displayDir = conn.movieDir ? conn.movieDir.split("/").pop() : conn.baseUrl || "";
   const label = conn.source === "local" ? "Folder · " + displayDir : "Server · " + conn.baseUrl;
 
   return (
     <header className="topbar">
       <div className="brand-block">
-        <button
-          className="sidebar-toggle"
-          onClick={onToggleSidebar}
-          aria-label="Toggle menu"
-          aria-expanded={sidebarOpen}
-          aria-controls="app-sidebar"
-        >
-          <span className="bar" />
-          <span className="bar" />
-          <span className="bar" />
-        </button>
         <div className="logo">
           movie<span>night</span>
         </div>

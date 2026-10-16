@@ -5,7 +5,16 @@
 // regression in layout or theme colours fails the build.
 
 const { test, expect } = require("@playwright/test");
-const { gotoHome, openLibrary, openSidebar, expandSection, NAV_ITEMS, SMART_SECTIONS } = require("./helpers");
+const {
+  gotoHome,
+  openLibrary,
+  openSidebar,
+  selectNav,
+  toggleSidebar,
+  expandSection,
+  NAV_ITEMS,
+  SMART_SECTIONS,
+} = require("./helpers");
 
 // ---------------------------------------------------------------------------
 // Home / connect screen
@@ -75,22 +84,38 @@ test.describe("Design - top bar", () => {
     await expect(page.locator(".topbar-right .btn-ghost")).toHaveText("Disconnect");
   });
 
-  test("sidebar toggle sits left of the logo and slides the accordion open/closed", async ({ page }) => {
+  test("floating toggle is vertically centred, hidden bars/chevron swap, and it slides the accordion", async ({ page }) => {
+    const vp = page.viewportSize();
     const toggle = page.locator(".sidebar-toggle");
-    const toggleBox = await toggle.boundingBox();
-    const logo = await page.locator(".logo").boundingBox();
-    expect(toggleBox.x).toBeLessThan(logo.x);
-
     const sidebar = page.locator(".sidebar");
-    await expect(toggle).toHaveAttribute("aria-expanded", "true");
-    await expect(sidebar).toHaveClass(/open/);
-    const openWidth = (await sidebar.boundingBox()).width;
-    expect(openWidth).toBeGreaterThanOrEqual(240);
 
-    await toggle.click();
+    // Closed by default: hamburger, pinned to the left screen edge, vertically centred.
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await expect(sidebar).not.toHaveClass(/open/);
+    await expect(toggle.locator(".bar")).toHaveCount(3);
+    await expect(toggle.locator(".chev")).toHaveCount(0);
+    const closedBox = await toggle.boundingBox();
+    expect(closedBox.x).toBeLessThanOrEqual(1);
+    expect(Math.abs(closedBox.y + closedBox.height / 2 - vp.height / 2)).toBeLessThanOrEqual(2);
+
+    const closedWidth = (await sidebar.boundingBox()).width;
+
+    // Open: the icon travels to the right edge of the menu and becomes a chevron.
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(sidebar).toHaveClass(/open/);
+    await expect(toggle.locator(".chev")).toHaveCount(1);
+    await expect(toggle.locator(".bar")).toHaveCount(0);
+    const openWidth = (await sidebar.boundingBox()).width;
+    expect(openWidth).toBeGreaterThanOrEqual(240);
+    await expect.poll(async () => (await toggle.boundingBox()).x).toBeGreaterThanOrEqual(openWidth - 2);
+
+    // The menu is dimmed-scrim aware: clicking outside closes it.
+    await page.locator(".scrim").click({ position: { x: vp.width - 20, y: vp.height - 20 } });
+    await expect(sidebar).not.toHaveClass(/open/);
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await expect.poll(async () => (await sidebar.boundingBox()).width).toBeLessThan(openWidth);
+    expect(closedWidth).toBeLessThan(2);
   });
 
   test("sidebar lists the nav items and the two smart accordion sections", async ({ page }) => {
@@ -206,6 +231,54 @@ test.describe("Design - title modal", () => {
     await expect(page.locator(".modal .actions")).toHaveCSS("display", "flex");
     await expect(page.locator(".modal .btn-play")).toHaveCSS("background-color", "rgb(255, 255, 255)");
     await expect(page.locator(".modal .btn-fav")).toBeVisible();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Series + episodes
+// ---------------------------------------------------------------------------
+test.describe("Design - series & episodes", () => {
+  test.beforeEach(async ({ page }) => {
+    await openLibrary(page);
+  });
+
+  test("a series is one card tagged 'Series' with an episode count", async ({ page }) => {
+    await selectNav(page, "Series");
+    await toggleSidebar(page);
+
+    const card = page.locator(".grid .card", { hasText: "Adventure Time" });
+    await expect(card).toHaveCount(1);
+    await expect(card.locator(".series-chip")).toHaveText("Series");
+    await expect(card.locator(".ep-count")).toHaveText("6 ep");
+  });
+
+  test("episode browser is a full-screen, season-grouped list with a centred column", async ({ page }) => {
+    const vp = page.viewportSize();
+    await selectNav(page, "New");
+    await toggleSidebar(page);
+    await page.locator(".grid .card", { hasText: "Adventure Time" }).first().click();
+    await page.locator(".modal .episodes-section button", { hasText: "View all episodes" }).click();
+
+    const view = page.locator(".episodes-view");
+    await expect(view).toBeVisible();
+    await expect(view).toHaveCSS("position", "fixed");
+    const box = await view.boundingBox();
+    expect(box.width).toBeGreaterThanOrEqual(vp.width - 1);
+    expect(box.height).toBeGreaterThanOrEqual(vp.height - 1);
+
+    await expect(view.locator(".ep-season-title")).toHaveCount(2);
+    await expect(view.locator(".ep-season-title").first()).toHaveText("Season 1");
+    await expect(view.locator(".ep-row")).toHaveCount(6);
+
+    const body = await view.locator(".episodes-body").boundingBox();
+    expect(body.width).toBeLessThanOrEqual(921); // min(920px, 100%)
+    expect(Math.abs(body.x + body.width / 2 - vp.width / 2)).toBeLessThanOrEqual(2);
+
+    // Header back control on the left, close control on the right.
+    const back = await view.locator(".episodes-top .btn-ghost").boundingBox();
+    const close = await view.locator(".episodes-top .player-close").boundingBox();
+    expect(back.x).toBeLessThan(vp.width / 2);
+    expect(close.x).toBeGreaterThan(vp.width / 2);
   });
 });
 

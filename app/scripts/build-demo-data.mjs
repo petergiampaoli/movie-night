@@ -18,7 +18,7 @@ import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { FILMS, safeName } from "./demo-films.mjs";
+import { FILMS, SERIES, safeName, safeFileName } from "./demo-films.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.join(here, "..");
@@ -105,6 +105,82 @@ async function downloadPoster(posterPath, dest) {
   fs.writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
 }
 
+async function resolveTvId(series, key) {
+  const data = await tmdb("/search/tv", { query: series.title, first_air_date_year: String(series.year) }, key);
+  const results = data.results || [];
+  if (!results.length) return null;
+  const exact = results.find((r) => r.name.toLowerCase() === series.title.toLowerCase());
+  return (exact || results[0]).id;
+}
+
+const pad = (n) => String(n).padStart(2, "0");
+
+async function buildSeries(page, series, key, color) {
+  const label = `${series.title} (${series.year})`;
+  const id = await resolveTvId(series, key);
+  if (!id) throw new Error("no TMDB match");
+  const d = await tmdb(`/tv/${id}`, { append_to_response: "external_ids" }, key);
+
+  const dir = path.join(outRoot, safeName(series));
+  fs.mkdirSync(dir, { recursive: true });
+
+  const info = {
+    title: d.name || series.title,
+    year: Number((d.first_air_date || "").slice(0, 4)) || series.year,
+    kind: "series",
+    tagline: d.tagline || null,
+    overview: d.overview || null,
+    rating: typeof d.vote_average === "number" ? d.vote_average : null,
+    voteCount: typeof d.vote_count === "number" ? d.vote_count : null,
+    genres: (d.genres || []).map((g) => g.name),
+    runtime: Array.isArray(d.episode_run_time) && d.episode_run_time.length ? d.episode_run_time[0] : null,
+    directors: (d.created_by || []).map((c) => c.name),
+    studios: (d.production_companies || []).map((c) => c.name),
+    tmdbId: d.id || null,
+    imdbId: (d.external_ids && d.external_ids.imdb_id) || null,
+    source: "tmdb",
+    fetchedAt: new Date().toISOString(),
+    episodes: [],
+  };
+
+  let posterBytes = 0;
+  if (d.poster_path) {
+    const posterDest = path.join(dir, "poster.jpg");
+    await downloadPoster(d.poster_path, posterDest);
+    posterBytes = fs.statSync(posterDest).size;
+  }
+
+  let clipTotal = 0;
+  let epCount = 0;
+  for (const [seasonStr, episodeNumbers] of Object.entries(series.seasons)) {
+    const season = Number(seasonStr);
+    const sd = await tmdb(`/tv/${id}/season/${season}`, {}, key);
+    const byNumber = new Map((sd.episodes || []).map((e) => [e.episode_number, e]));
+    for (const epNum of episodeNumbers) {
+      const e = byNumber.get(epNum) || {};
+      const epTitle = e.name || `Episode ${epNum}`;
+      info.episodes.push({
+        season,
+        episode: epNum,
+        title: epTitle,
+        overview: e.overview || null,
+        airDate: e.air_date || null,
+      });
+      const file = `${safeFileName(series.title)} S${pad(season)}E${pad(epNum)} - ${safeFileName(epTitle)}.webm`;
+      const webm = await recordClip(page, color, `${series.title} S${pad(season)}E${pad(epNum)}`);
+      fs.writeFileSync(path.join(dir, file), webm);
+      clipTotal += webm.length;
+      epCount += 1;
+    }
+  }
+
+  fs.writeFileSync(path.join(dir, "info.json"), JSON.stringify(info, null, 2));
+  console.log(
+    `  ok  ${label}  (tmdb ${info.tmdbId}, rating ${info.rating}, genres ${info.genres.length}, ` +
+      `${epCount} episodes, poster ${posterBytes}B, clips ${clipTotal}B)`
+  );
+}
+
 async function main() {
   const key = readKey();
   if (!key) {
@@ -175,6 +251,19 @@ async function main() {
       console.error(`  FAIL ${label}: ${err.message}`);
     }
     await new Promise((r) => setTimeout(r, 60)); // be polite to the API
+  }
+
+  // Series are built LAST so their files carry the newest timestamps (they show
+  // first under "New" in the demo). Each series is one folder full of episodes.
+  for (const series of SERIES) {
+    const label = `${series.title} (${series.year})`;
+    try {
+      await buildSeries(page, series, key, CLIP_COLORS[0]);
+    } catch (err) {
+      failures.push(`${label}: ${err.message}`);
+      console.error(`  FAIL ${label}: ${err.message}`);
+    }
+    await new Promise((r) => setTimeout(r, 60));
   }
 
   await browser.close();

@@ -33,7 +33,7 @@ function createApp({
   function buildMovie(rec) {
     const info = lib.readInfo(rec);
     const poster = lib.posterPath(rec) || (fs.existsSync(lib.dataPosterPath(rec.id)) ? lib.dataPosterPath(rec.id) : null);
-    return {
+    const base = {
       id: rec.id,
       path: rec.relPath,
       title: (info && info.title) || rec.cleanTitle,
@@ -56,8 +56,29 @@ function createApp({
       hasPoster: Boolean(poster),
       favorite: favs.has(rec.id),
       posterUrl: poster ? `/api/movies/${rec.id}/poster` : null,
-      streamUrl: `/api/movies/${rec.id}/stream`,
     };
+
+    if (rec.kind === "series") {
+      const meta = new Map(
+        ((info && info.episodes) || []).map((e) => [`${e.season}:${e.episode}`, e])
+      );
+      const episodes = (rec.episodes || []).map((e) => {
+        const m = meta.get(`${e.season}:${e.episode}`) || {};
+        return {
+          id: e.id,
+          season: e.season,
+          episode: e.episode,
+          title: m.title || e.title || `Episode ${e.episode}`,
+          overview: m.overview || null,
+          airDate: m.airDate || null,
+          addedAt: e.addedAt || null,
+          streamUrl: `/api/movies/${e.id}/stream`,
+        };
+      });
+      return { ...base, streamUrl: null, episodes };
+    }
+
+    return { ...base, streamUrl: `/api/movies/${rec.id}/stream` };
   }
 
   function findRec(req, res) {
@@ -116,6 +137,10 @@ function createApp({
   app.get("/api/movies/:id/stream", (req, res) => {
     const rec = findRec(req, res);
     if (!rec) return;
+    if (!rec.srcPath) {
+      res.status(404).json({ error: "This item has no playable file (series are played per-episode)" });
+      return;
+    }
     streamVideo(req, res, rec.srcPath);
   });
 

@@ -3,8 +3,8 @@
   "year": 2013,
   "tagline": "We must live.",
   "overview": "A lifelong love of flight inspires Japanese aviation engineer Jiro Horikoshi, whose storied career includes the creation of the A-6M World War II fighter plane.",
-  "rating": 7.8,
-  "voteCount": 3512,
+  "rating": 7.784,
+  "voteCount": 3515,
   "genres": [
     "Animation",
     "Drama",
@@ -28,5 +28,5 @@
   "tmdbId": 149870,
   "imdbId": "tt2013293",
   "source": "tmdb",
-  "fetchedAt": "2026-10-14T04:42:50.192Z"
+  "fetchedAt": "2026-10-16T02:45:50.792Z"
 }

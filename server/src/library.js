@@ -34,22 +34,25 @@ function cleanTitle(name) {
 }
 
 // Heuristic: a file is an "episode" if its name carries an SxxEyy marker.
-const EPISODE_RE = /(?:^|[\s._-])(?:s\d{1,2}\s?e\d{1,3}|e\d{1,3})(?:$|[\s._-])/i;
+const EPISODE_SE = /s(\d{1,2})\s?e(\d{1,3})/i;
+const EPISODE_E = /(?:^|[\s._-])e(\d{1,3})(?:$|[\s._-])/i;
 
-// Series grouping pass: folders holding 2+ video files are treated as shows
-// (their files are episodes), single-video folders are standalone films.
-function classifyGroups(walked) {
-  const byDir = new Map();
-  for (const rec of walked) {
-    const group = byDir.get(rec.dir) || (byDir.set(rec.dir, []), byDir.get(rec.dir));
-    group.push(rec);
-  }
-  for (const rec of walked) {
-    const siblings = byDir.get(rec.dir) || [rec];
-    const hasEpisodeMarker = EPISODE_RE.test(rec.basename);
-    rec.kind = hasEpisodeMarker || siblings.length > 1 ? "series" : "film";
-  }
-  return walked;
+function parseEpisode(name) {
+  let m = name.match(EPISODE_SE);
+  if (m) return { season: Number(m[1]), episode: Number(m[2]) };
+  m = name.match(EPISODE_E);
+  if (m) return { season: 1, episode: Number(m[1]) };
+  return null;
+}
+
+// Best-effort episode title from a filename: anything after the SxxEyy marker,
+// else the cleaned name, else "Episode N".
+function episodeTitle(name, ep) {
+  const base = name.replace(/\.[A-Za-z0-9]{2,5}$/, "");
+  const m = base.match(EPISODE_SE);
+  let rest = m ? base.slice(m.index + m[0].length) : "";
+  rest = rest.replace(/^[\s._-]+/, "").replace(/[-_.]+/g, " ").replace(/\s+/g, " ").trim();
+  return rest || `Episode ${ep.episode}`;
 }
 
 function walk(dirs, base = "") {
@@ -74,6 +77,7 @@ function walk(dirs, base = "") {
       } catch {
         /* stat may fail for unreadable files */
       }
+      const ep = parseEpisode(entry.name);
       raw.push({
         srcPath: full,
         relPath: rel,
@@ -84,17 +88,80 @@ function walk(dirs, base = "") {
         dir: path.dirname(full),
         ext: path.extname(entry.name).toLowerCase(),
         addedAt,
+        isEpisode: Boolean(ep),
+        season: ep ? ep.season : null,
+        episode: ep ? ep.episode : null,
+        episodeTitle: ep ? episodeTitle(entry.name, ep) : null,
       });
     }
   }
-  return classifyGroups(raw);
+  return raw;
+}
+
+// Grouping pass: a folder is a SERIES when it holds 2+ videos or any file with
+// an SxxEyy marker; it collapses to ONE library item whose `episodes` list every
+// file. Everything else stays a standalone film.
+function groupItems(files) {
+  const byDir = new Map();
+  for (const f of files) {
+    const arr = byDir.get(f.dir) || (byDir.set(f.dir, []), byDir.get(f.dir));
+    arr.push(f);
+  }
+  const items = [];
+  for (const [dir, group] of byDir) {
+    const isSeries = group.length > 1 || group.some((f) => f.isEpisode);
+    if (!isSeries) {
+      items.push({ ...group[0], kind: "film" });
+      continue;
+    }
+    group.sort(
+      (a, b) => (a.season || 0) - (b.season || 0) || (a.episode || 0) - (b.episode || 0) || a.basename.localeCompare(b.basename)
+    );
+    const dirName = path.basename(dir);
+    let dirRel = path.dirname(group[0].relPath);
+    if (dirRel === ".") dirRel = "";
+    // Multi-video folders are named by the folder; a lone episode file carries
+    // the show name, so fall back to the filename with the SxxEyy marker cut.
+    const seriesTitle =
+      group.length === 1
+        ? cleanTitle(
+            group[0].basename
+              .replace(/\.[A-Za-z0-9]{2,5}$/, "")
+              .replace(EPISODE_SE, " ")
+              .replace(/[-_.]+/g, " ")
+              .trim()
+          )
+        : cleanTitle(dirName);
+    items.push({
+      id: idFor(`series:${dirRel || dirName}`),
+      relPath: dirRel || dirName,
+      dir,
+      basename: dirName,
+      cleanTitle: seriesTitle || cleanTitle(dirName),
+      yearGuess: guessYear(dirName),
+      kind: "series",
+      addedAt: group.reduce((max, f) => Math.max(max, f.addedAt || 0), 0) || null,
+      episodes: group.map((f) => ({
+        id: f.id,
+        relPath: f.relPath,
+        basename: f.basename,
+        srcPath: f.srcPath,
+        ext: f.ext,
+        season: f.season,
+        episode: f.episode,
+        addedAt: f.addedAt,
+        title: f.episodeTitle,
+      })),
+    });
+  }
+  return items;
 }
 
 class Library {
   constructor({ movieDir, dataDir }) {
     this.movieDir = movieDir;
     this.dataDir = dataDir;
-    this._cache = { key: null, recs: null };
+    this._cache = { key: null, files: null, items: null, byId: null };
   }
 
   _signature() {
@@ -108,22 +175,38 @@ class Library {
   }
 
   invalidate() {
-    this._cache = { key: null, recs: null };
+    this._cache = { key: null, files: null, items: null, byId: null };
   }
 
+  _scanAll() {
+    if (this._cache.items && this._cache.key === this._signature()) return this._cache;
+    const files = walk(this.movieDir);
+    const items = groupItems(files);
+    // Index everything a client can address: library items (films, series
+    // groups) AND individual files (so episodes/films stream by their own id).
+    const byId = new Map();
+    for (const f of files) byId.set(f.id, f);
+    for (const it of items) byId.set(it.id, it);
+    this._cache = { key: this._signature(), files, items, byId };
+    return this._cache;
+  }
+
+  // Library items: films + one item per series.
   scan() {
-    if (this._cache.recs && this._cache.key === this._signature()) return this._cache.recs;
-    const recs = walk(this.movieDir);
-    this._cache = { key: this._signature(), recs };
-    return recs;
+    return this._scanAll().items;
   }
 
   list() {
     return this.scan();
   }
 
+  // Raw video files (episodes + films), for streaming.
+  files() {
+    return this._scanAll().files;
+  }
+
   find(id) {
-    return this.scan().find((r) => r.id === id) || null;
+    return this._scanAll().byId.get(id) || null;
   }
 
   infoPath(rec) {

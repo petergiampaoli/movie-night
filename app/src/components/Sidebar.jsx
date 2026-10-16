@@ -26,7 +26,7 @@ export function Sidebar({ open, selection, onSelect, counts, collections, genres
   const pick = (next) => onSelect(next);
 
   return (
-    <aside className={"sidebar" + (open ? " open" : "")} aria-hidden={!open}>
+    <aside id="app-sidebar" className={"sidebar" + (open ? " open" : "")} aria-hidden={!open}>
       <div className="sidebar-inner">
         <div className="sidebar-heading">Library</div>
         <button

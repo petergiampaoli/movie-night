@@ -12,6 +12,7 @@ const {
   connectToServer,
   selectNav,
   openSidebar,
+  toggleSidebar,
   videoPaused,
 } = require("./helpers");
 
@@ -52,13 +53,17 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
 
   // 5. Switch views from the left accordion sidebar -------------------------
   await selectNav(page, "Series");
-  await expect(page.locator(".grid .card")).toHaveCount(0);
+  await expect(page.locator(".grid .card")).toHaveCount(1); // one series (Adventure Time)
 
   await selectNav(page, "New");
-  await expect(page.locator(".grid .card")).toHaveCount(24); // all titles
+  await expect(page.locator(".grid .card")).toHaveCount(25); // all titles (24 films + 1 series)
 
   await selectNav(page, "Films");
   await expect(page.locator(".grid .card")).toHaveCount(24);
+
+  // The menu dims the content while open, so close it before browsing.
+  await toggleSidebar(page);
+  await expect(page.locator(".sidebar")).not.toHaveClass(/open/);
 
   // 6. Choose a film -> title modal -----------------------------------------
   await page.locator(".grid .card", { hasText: "Spirited Away" }).first().click();
@@ -108,6 +113,59 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
   await expect(page.locator(".grid .card .fav-btn")).toHaveClass(/on/);
 });
 
+test("series journey: browse episodes and play one", async ({ page }) => {
+  await resetFavorites();
+  await gotoHome(page);
+  await connectToServer(page);
+
+  // Series view holds the single show as one item.
+  await selectNav(page, "Series");
+  const card = page.locator(".grid .card", { hasText: "Adventure Time" });
+  await expect(card).toHaveCount(1);
+  await expect(card.locator(".series-chip")).toBeVisible();
+  await expect(card.locator(".ep-count")).toContainText("6");
+
+  // New view puts the freshly added series first.
+  await selectNav(page, "New");
+  await expect(page.locator(".grid .card").first().locator(".card-title")).toHaveText("Adventure Time");
+
+  // The menu dims the content while open, so close it before clicking a card.
+  await toggleSidebar(page);
+  await expect(page.locator(".sidebar")).not.toHaveClass(/open/);
+
+  // Open the series -> modal shows an episodes preview + a "View all episodes" button.
+  await card.first().click();
+  await expect(page.locator(".modal-headline h1")).toHaveText("Adventure Time");
+  const section = page.locator(".modal .episodes-section");
+  await expect(section).toBeVisible();
+  await expect(section.locator(".ep-preview-row")).toHaveCount(4);
+  await expect(section).toContainText("6 total");
+  await expect(section).toContainText("+2 more episodes");
+
+  // "View all episodes" opens the dedicated full-screen episodes view.
+  await section.locator("button", { hasText: "View all episodes" }).click();
+  const view = page.locator(".episodes-view");
+  await expect(view).toBeVisible();
+  await expect(view.locator(".episodes-series")).toHaveText("Adventure Time");
+  await expect(view.locator(".ep-season")).toHaveCount(2); // two seasons
+  await expect(view.locator(".ep-row")).toHaveCount(6);
+
+  // Play an episode -> the player titles it with the show + code + episode name.
+  await view.locator(".ep-row", { hasText: "Prisoners of Love" }).locator(".ep-play").click();
+  const overlay = page.locator(".player-overlay");
+  await expect(overlay).toBeVisible();
+  await expect(page.locator(".player-title")).toContainText("Adventure Time · S1E3 · Prisoners of Love");
+  const video = page.locator("video.player-video");
+  expect(await video.getAttribute("src")).toContain("/stream");
+
+  // Exiting the player returns to the episodes view, and Back returns to the modal.
+  await page.click(".player-overlay .player-close");
+  await expect(view).toBeVisible();
+  await view.locator("button", { hasText: "Back" }).click();
+  await expect(page.locator(".episodes-view")).toHaveCount(0);
+  await expect(page.locator(".modal-backdrop")).toBeVisible();
+});
+
 test("disconnect returns the user to the home screen", async ({ page }) => {
   await resetFavorites();
   await gotoHome(page);
@@ -149,10 +207,11 @@ test("'Get movie information' opens a confirm dialog (no blank page) and fails g
   await page.route(/\/api\/movies(\?.*)?$/, async (route) => {
     const res = await route.fetch();
     const json = await res.json();
-    if (json.movies && json.movies.length > 0) {
-      json.movies[0].hasInfo = false;
-      json.movies[0].hasPoster = false;
-      json.movies[0].posterUrl = null;
+    const film = (json.movies || []).find((m) => m.kind !== "series");
+    if (film) {
+      film.hasInfo = false;
+      film.hasPoster = false;
+      film.posterUrl = null;
     }
     await route.fulfill({ response: res, json });
   });

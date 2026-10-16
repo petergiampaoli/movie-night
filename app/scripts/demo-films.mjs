@@ -34,7 +34,21 @@ export const FILMS = [
   { title: "The Boy and the Heron", year: 2023, director: "Hayao Miyazaki" },
 ];
 
+// Series in the demo library. `seasons` maps a season number to the episode
+// numbers we bake in (kept small; TMDB supplies the episode titles/overviews).
+export const SERIES = [
+  {
+    title: "Adventure Time",
+    year: 2010,
+    seasons: { 1: [1, 2, 3], 2: [1, 2, 3] },
+  },
+];
+
 // Folder/file-safe name (colons and slashes break paths on some platforms).
 export function safeName(film) {
   return `${film.title.replace(/[:/]/g, " -")} (${film.year})`;
+}
+
+export function safeFileName(name) {
+  return name.replace(/[:/]/g, " -");
 }

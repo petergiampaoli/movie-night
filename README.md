@@ -50,8 +50,10 @@ Then connect the app (or any browser) to `http://127.0.0.1:8787`.
 ### Option C — try it with the bundled demo library
 
 `app/demo-data/movies` ships a small, real library (24 films: every Wes Anderson and
-Hayao Miyazaki feature) whose posters/synopses/ratings were fetched from TMDB **once**
-and baked to disk — no network needed to browse or open a title.
+Hayao Miyazaki feature) plus one TV series (Adventure Time, 6 episodes across 2 seasons)
+whose posters/synopses/ratings were fetched from TMDB **once** and baked to disk — no
+network needed to browse or open a title. A folder of episodes collapses into a single
+Series item; open it to see the episode list in its own full-screen view.
 
 ```sh
 cd movienight/app
@@ -63,7 +65,7 @@ Settings → API) in a gitignored file, then:
 
 ```sh
 printf '%s' 'YOUR_32_CHAR_V3_KEY' > ../.tmdb_api_key
-npm run demo:data    # queries TMDB, writes info.json + poster.jpg + a demo clip per film
+npm run demo:data    # queries TMDB, writes info.json + poster.jpg + a demo clip per film/episode
 ```
 
 Config env vars (server):
