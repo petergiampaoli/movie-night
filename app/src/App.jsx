@@ -285,7 +285,6 @@ export default function App() {
         onQuery={setQuery}
         onDisconnect={disconnect}
         onNavigate={navigate}
-        onOpenAdd={() => setAddOpen(true)}
       />
       <SidebarToggle open={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
       <div

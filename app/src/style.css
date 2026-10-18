@@ -33,7 +33,7 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-
   top: 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 12px 22px;
   border-bottom: 1px solid var(--stroke);
@@ -621,13 +621,13 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-
 
 @media (max-width: 720px) {
   .topbar {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr;
     gap: 10px;
     padding: 10px 14px;
   }
+  .topbar-left { display: none; }
   .topbar-center { grid-row: 1; grid-column: 1; justify-content: flex-start; }
   .topbar-right { grid-row: 1; grid-column: 2; }
-  .topbar-left { grid-row: 2; grid-column: 1 / -1; }
   .search { width: 100%; }
   .search input { width: 100%; }
   .modal-hero { flex-direction: column; align-items: flex-start; }
@@ -1144,35 +1144,14 @@ code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-
 .panel-empty h3 { color: var(--text); font-size: 20px; margin: 14px 0 8px; }
 .panel-empty p { line-height: 1.6; margin: 0 0 22px; }
 
-/* ---- sidebar footer ---- */
-.sidebar-footer {
-  border-top: 1px solid var(--stroke);
-  padding: 12px;
-  background: var(--bg-soft);
-}
-.sidebar-add-media {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--stroke);
-  background: var(--bg-soft);
-  color: var(--text);
-  cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-}
-.sidebar-add-media:hover { background: var(--card); border-color: var(--accent); color: var(--accent); }
+/* ---- sidebar add-media action (top of the list) ---- */
+.sidebar-add-media { margin-bottom: 6px; }
 .sidebar-add-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--stroke);
   font-weight: 700;
+  font-size: 15px;
   line-height: 1;
 }
-.sidebar-add-text { font-weight: 600; }
+.sidebar-add-media:hover .sidebar-add-icon { color: inherit; }

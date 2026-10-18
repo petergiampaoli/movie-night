@@ -28,6 +28,14 @@ export function Sidebar({ open, selection, onSelect, counts, collections, genres
   return (
     <aside id="app-sidebar" className={"sidebar" + (open ? " open" : "")} aria-hidden={!open}>
       <div className="sidebar-inner">
+        <button
+          className="nav-item sidebar-add-media"
+          type="button"
+          onClick={() => onOpenAdd?.()}
+        >
+          <span className="nav-icon sidebar-add-icon">+</span>
+          <span className="nav-label">Add media</span>
+        </button>
         <div className="sidebar-heading">Library</div>
         <button
           className={"nav-item" + (isActive(selection, "view", "films") ? " active" : "")}
@@ -97,19 +105,6 @@ export function Sidebar({ open, selection, onSelect, counts, collections, genres
             </button>
           ))}
         </Accordion>
-      </div>
-      <div className="sidebar-footer">
-        <button
-          className="sidebar-add-media"
-          type="button"
-          onClick={() => {
-            onSelect(selection);
-            onOpenAdd?.();
-          }}
-        >
-          <span className="sidebar-add-icon">+</span>
-          <span className="sidebar-add-text">Add media</span>
-        </button>
       </div>
     </aside>
   );

@@ -1,9 +1,11 @@
 import { UserMenu } from "./UserMenu.jsx";
 
-export function TopBar({ conn, query, onQuery, onDisconnect, onNavigate, onOpenAdd }) {
+export function TopBar({ conn, query, onQuery, onDisconnect, onNavigate }) {
   return (
     <header className="topbar">
-      <div className="topbar-left">
+      <div className="topbar-left" />
+
+      <div className="topbar-center">
         <div className="logo">
           movie<span>night</span>
         </div>
