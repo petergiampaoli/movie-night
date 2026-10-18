@@ -70,22 +70,23 @@ test.describe("Design - top bar", () => {
     await openLibrary(page);
   });
 
-  test("is a sticky bar with the logo centred, search left, and a user menu", async ({ page }) => {
+  test("is a sticky bar with the logo left, search right, and a user menu", async ({ page }) => {
     const bar = page.locator(".topbar");
     await expect(bar).toHaveCSS("position", "sticky");
     expect((await bar.boundingBox()).y).toBeLessThanOrEqual(1);
 
-    const search = await page.locator(".search").boundingBox();
     const logo = await page.locator(".topbar .logo").boundingBox();
+    const search = await page.locator(".search").boundingBox();
     const user = await page.locator(".user-avatar").boundingBox();
     const barBox = await bar.boundingBox();
 
-    // Search sits on the left side of the top bar.
-    expect(search.x).toBeGreaterThanOrEqual(barBox.x - 0.5);
-    expect(search.x).toBeLessThan(logo.x);
+    // Logo sits on the left side of the top bar.
+    expect(logo.x).toBeGreaterThanOrEqual(barBox.x - 0.5);
+    expect(logo.x + logo.width).toBeLessThanOrEqual(barBox.x + barBox.width + 0.5);
 
-    // Logo is approximately centred horizontally.
-    expect(Math.abs(logo.x + logo.width / 2 - (barBox.x + barBox.width / 2))).toBeLessThanOrEqual(4);
+    // Search sits to the right of the logo and to the left of the user menu.
+    expect(search.x).toBeGreaterThanOrEqual(logo.x + logo.width - 0.5);
+    expect(search.x + search.width).toBeLessThanOrEqual(user.x + 0.5);
 
     // User avatar sits on the right.
     expect(user.x + user.width).toBeLessThanOrEqual(barBox.x + barBox.width + 0.5);

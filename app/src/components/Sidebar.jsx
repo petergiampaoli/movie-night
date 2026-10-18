@@ -22,7 +22,7 @@ function Accordion({ title, icon, defaultOpen = false, children }) {
   );
 }
 
-export function Sidebar({ open, selection, onSelect, counts, collections, genres }) {
+export function Sidebar({ open, selection, onSelect, counts, collections, genres, onOpenAdd }) {
   const pick = (next) => onSelect(next);
 
   return (
@@ -97,6 +97,19 @@ export function Sidebar({ open, selection, onSelect, counts, collections, genres
             </button>
           ))}
         </Accordion>
+      </div>
+      <div className="sidebar-footer">
+        <button
+          className="sidebar-add-media"
+          type="button"
+          onClick={() => {
+            onSelect(selection);
+            onOpenAdd?.();
+          }}
+        >
+          <span className="sidebar-add-icon">+</span>
+          <span className="sidebar-add-text">Add media</span>
+        </button>
       </div>
     </aside>
   );

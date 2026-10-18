@@ -9,6 +9,7 @@ import { MovieCard } from "./components/MovieCard.jsx";
 import { MovieModal } from "./components/MovieModal.jsx";
 import { EpisodesView } from "./components/EpisodesView.jsx";
 import { UserPanel } from "./components/UserPanel.jsx";
+import { AddMovie } from "./components/AddMovie.jsx";
 import { Player } from "./components/Player.jsx";
 import { ConfirmDialog } from "./components/ConfirmDialog.jsx";
 import { Toast } from "./components/Toast.jsx";
@@ -43,6 +44,7 @@ export default function App() {
   const [modalMovie, setModalMovie] = useState(null);
   const [episodesView, setEpisodesView] = useState(null);
   const [panel, setPanel] = useState(null);
+  const [addOpen, setAddOpen] = useState(false);
   const [playing, setPlaying] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState(null);
@@ -76,6 +78,7 @@ export default function App() {
         setModalMovie(null);
         setEpisodesView(null);
         setPanel(null);
+        setAddOpen(false);
         setPlaying(null);
         notify("Local server stopped", "error");
       }
@@ -163,6 +166,7 @@ export default function App() {
     setModalMovie(null);
     setEpisodesView(null);
     setPanel(null);
+    setAddOpen(false);
     setPlaying(null);
   };
 
@@ -281,6 +285,7 @@ export default function App() {
         onQuery={setQuery}
         onDisconnect={disconnect}
         onNavigate={navigate}
+        onOpenAdd={() => setAddOpen(true)}
       />
       <SidebarToggle open={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
       <div
@@ -296,6 +301,7 @@ export default function App() {
           counts={counts}
           collections={collections}
           genres={genres}
+          onOpenAdd={() => setAddOpen(true)}
         />
         <main className="content">
           {error && (
@@ -377,6 +383,16 @@ export default function App() {
             disconnect();
           }}
           onClose={() => setPanel(null)}
+        />
+      )}
+
+      {addOpen && (
+        <AddMovie
+          conn={conn}
+          client={client}
+          onClose={() => setAddOpen(false)}
+          onAdded={() => loadMovies()}
+          notify={notify}
         />
       )}
 

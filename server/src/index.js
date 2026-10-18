@@ -1,13 +1,16 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const crypto = require("node:crypto");
 const express = require("express");
 const cors = require("cors");
 
 const { loadConfig } = require("./config");
-const { Library, POSTERS_DIR } = require("./library");
+const { Library, POSTERS_DIR, VIDEO_EXTS } = require("./library");
 const { streamVideo } = require("./stream");
 const { Favorites } = require("./favorites");
 const { Watchlist } = require("./watchlist");
+const { Ripper } = require("./ripping");
+const { detectDiscs } = require("./discs");
 const { Tmdb } = require("./tmdb");
 const { writeInfo, writePoster } = require("./metadata");
 const pkg = require("../package.json");
@@ -19,6 +22,7 @@ function createApp({
   library,
   favorites,
   watchlist,
+  ripper,
   tmdb,
   name = "movienight",
 } = {}) {
@@ -31,7 +35,31 @@ function createApp({
     });
   const favs = favorites || new Favorites(path.join(cfg.dataDir, "favorites.json"));
   const watch = watchlist || new Watchlist(path.join(cfg.dataDir, "watchlist.json"));
+  const rips = ripper || new Ripper({ movieDir: lib.movieDir, library: lib });
   const tmd = tmdb || new Tmdb(apiKey !== undefined ? apiKey : cfg.apiKey);
+
+  // Land an uploaded file in the library without clobbering an existing one.
+  function uniqueName(name) {
+    if (!fs.existsSync(path.join(lib.movieDir, name))) return name;
+    const ext = path.extname(name);
+    const base = name.slice(0, name.length - ext.length);
+    let i = 2;
+    while (fs.existsSync(path.join(lib.movieDir, `${base} (${i})${ext}`))) i += 1;
+    return `${base} (${i})${ext}`;
+  }
+
+  function safeImportName(name) {
+    const raw = String(name || "").trim();
+    if (!raw) throw new Error("Missing file name — use ?name=");
+    if (/[\\/]/.test(raw)) throw new Error("File name must not contain a path");
+    if (raw.startsWith(".")) throw new Error("Hidden files are not allowed");
+    const ext = path.extname(raw).toLowerCase();
+    if (!VIDEO_EXTS.includes(ext)) {
+      throw new Error(`Unsupported file type "${ext || "none"}" — video files only`);
+    }
+    if (raw.length > 200) throw new Error("File name is too long");
+    return raw;
+  }
 
   function buildMovie(rec) {
     const info = lib.readInfo(rec);
@@ -178,6 +206,92 @@ function createApp({
     if (!rec) return;
     watch.set(rec.id, false);
     res.json({ ok: true, id: rec.id, watchlist: false });
+  });
+
+  // --- add to library --------------------------------------------------------
+
+  // "Add by file": stream the request body straight into the library folder.
+  // The body is streamed, so multi-GB files never sit in memory. A half-written
+  // upload uses a non-video ".part" extension, which the scanner ignores.
+  app.post("/api/import", (req, res) => {
+    let name;
+    try {
+      name = safeImportName(req.query.name);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+
+    const tmp = path.join(lib.movieDir, `.import-${crypto.randomBytes(8).toString("hex")}.part`);
+    const out = fs.createWriteStream(tmp);
+    req.on("error", () => out.destroy());
+    out.on("error", () => {
+      try {
+        fs.unlinkSync(tmp);
+      } catch {
+        /* ignore */
+      }
+      if (!res.headersSent) res.status(500).json({ error: "Upload failed" });
+    });
+    req.pipe(out);
+    out.on("finish", () => {
+      try {
+        const final = uniqueName(name);
+        fs.renameSync(tmp, path.join(lib.movieDir, final));
+        lib.invalidate();
+        res.json({ ok: true, name: final });
+      } catch (err) {
+        try {
+          fs.unlinkSync(tmp);
+        } catch {
+          /* ignore */
+        }
+        res.status(500).json({ error: `Import failed: ${err.message}` });
+      }
+    });
+  });
+
+  // Which ripper tools the host has available (drives the in-app hint).
+  app.get("/api/tools", (req, res) => res.json(rips.tools()));
+
+  // Optical discs currently mounted under /Volumes.
+  app.get("/api/discs", async (req, res) => {
+    try {
+      const discs = await detectDiscs();
+      res.json({ discs });
+    } catch (err) {
+      res.status(500).json({ error: `Disc scan failed: ${err.message}` });
+    }
+  });
+
+  app.get("/api/rips", (req, res) => res.json({ jobs: rips.list() }));
+
+  app.post("/api/rips", (req, res) => {
+    const body = req.body || {};
+    if (!body.mount && !body.device) {
+      res.status(400).json({ error: "Choose a disc to rip" });
+      return;
+    }
+    const job = rips.start({
+      mount: body.mount,
+      device: body.device,
+      type: body.type,
+      label: body.label,
+      optimize: body.optimize,
+    });
+    res.json({ job });
+  });
+
+  app.get("/api/rips/:id", (req, res) => {
+    const job = rips.get(req.params.id);
+    if (!job) return res.status(404).json({ error: "Rip not found" });
+    res.json({ job });
+  });
+
+  app.delete("/api/rips/:id", (req, res) => {
+    const job = rips.cancel(req.params.id);
+    if (!job) return res.status(404).json({ error: "Rip not found" });
+    res.json({ job });
   });
 
   // Opt-in metadata fetch from TheMovieDB. The client MUST send { confirm: true };
