@@ -9,11 +9,11 @@ import {
 } from "../src/viewFilter.mjs";
 
 const MOVIES = [
-  { id: "a", kind: "film", favorite: false, addedAt: 100, directors: ["Alice"], genres: ["Drama"] },
-  { id: "b", kind: "film", favorite: true, addedAt: 50, directors: ["Alice", "Bob"], genres: ["Drama", "Crime"] },
-  { id: "c", kind: "series", favorite: false, addedAt: 300, genres: ["Animation"] },
-  { id: "d", kind: "series", favorite: true, addedAt: 70, genres: ["Animation", "Adventure"] },
-  { id: "e", kind: "film", favorite: false, addedAt: 400, directors: ["Bob"], genres: ["Drama"] },
+  { id: "a", kind: "film", favorite: false, watchlist: false, addedAt: 100, directors: ["Alice"], genres: ["Drama"] },
+  { id: "b", kind: "film", favorite: true, watchlist: true, addedAt: 50, directors: ["Alice", "Bob"], genres: ["Drama", "Crime"] },
+  { id: "c", kind: "series", favorite: false, watchlist: true, addedAt: 300, genres: ["Animation"] },
+  { id: "d", kind: "series", favorite: true, watchlist: false, addedAt: 70, genres: ["Animation", "Adventure"] },
+  { id: "e", kind: "film", favorite: false, watchlist: false, addedAt: 400, directors: ["Bob"], genres: ["Drama"] },
 ];
 
 const view = (value) => ({ type: "view", value });
@@ -34,6 +34,21 @@ test("filterMovies view 'favorites' returns only favorites", () => {
   const got = filterMovies(MOVIES, view("favorites"), "");
   assert.equal(got.length, 2);
   assert.ok(got.every((m) => m.favorite));
+});
+
+test("filterMovies view 'likes' mirrors favorites", () => {
+  const got = filterMovies(MOVIES, view("likes"), "");
+  assert.deepEqual(got.map((m) => m.id).sort(), ["b", "d"]);
+});
+
+test("filterMovies view 'watchlist' returns only watchlisted", () => {
+  const got = filterMovies(MOVIES, view("watchlist"), "");
+  assert.deepEqual(got.map((m) => m.id).sort(), ["b", "c"]);
+});
+
+test("filterMovies view 'diary' sorts by addedAt desc like 'new'", () => {
+  const got = filterMovies(MOVIES, view("diary"), "");
+  assert.deepEqual(got.map((m) => m.id), ["e", "c", "a", "d", "b"]);
 });
 
 test("filterMovies view 'new' sorts by addedAt desc", () => {
@@ -63,8 +78,8 @@ test("directorList accepts the singular director field", () => {
   assert.deepEqual(directorList({}), []);
 });
 
-test("viewCounts tallies films, series, favorites and total", () => {
-  assert.deepEqual(viewCounts(MOVIES), { films: 3, series: 2, favorites: 2, new: 5 });
+test("viewCounts tallies films, series, favorites, watchlist and total", () => {
+  assert.deepEqual(viewCounts(MOVIES), { films: 3, series: 2, favorites: 2, watchlist: 2, new: 5 });
 });
 
 test("smartCollections surfaces one director for libraries of 30 or fewer", () => {
@@ -81,6 +96,11 @@ test("smartCollections surfaces two directors once the library exceeds 30", () =
   assert.equal(got.length, 2);
   assert.deepEqual(got.map((c) => c.label), ["Prolific", "Rare"]);
   assert.equal(got[0].count, 20);
+});
+
+test("smartCollections can list every director when max is Infinity", () => {
+  const got = smartCollections(MOVIES, { max: Infinity });
+  assert.deepEqual(got.map((c) => c.label), ["Alice", "Bob"]);
 });
 
 test("smartGenres returns the most common genres, capped at six", () => {

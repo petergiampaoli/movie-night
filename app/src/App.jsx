@@ -8,6 +8,7 @@ import { SidebarToggle } from "./components/SidebarToggle.jsx";
 import { MovieCard } from "./components/MovieCard.jsx";
 import { MovieModal } from "./components/MovieModal.jsx";
 import { EpisodesView } from "./components/EpisodesView.jsx";
+import { UserPanel } from "./components/UserPanel.jsx";
 import { Player } from "./components/Player.jsx";
 import { ConfirmDialog } from "./components/ConfirmDialog.jsx";
 import { Toast } from "./components/Toast.jsx";
@@ -19,7 +20,15 @@ function selectionTitle(selection, query) {
   if (!selection) return "Browse";
   if (selection.type === "director") return selection.value;
   if (selection.type === "genre") return selection.value;
-  const labels = { films: "Films", series: "Series", new: "New", favorites: "Favorites" };
+  const labels = {
+    films: "Films",
+    series: "Series",
+    new: "New",
+    favorites: "Favorites",
+    watchlist: "Watchlist",
+    diary: "Diary",
+    likes: "Likes",
+  };
   return labels[selection.value] || "Browse";
 }
 
@@ -33,6 +42,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalMovie, setModalMovie] = useState(null);
   const [episodesView, setEpisodesView] = useState(null);
+  const [panel, setPanel] = useState(null);
   const [playing, setPlaying] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [toast, setToast] = useState(null);
@@ -65,6 +75,7 @@ export default function App() {
         setMovies([]);
         setModalMovie(null);
         setEpisodesView(null);
+        setPanel(null);
         setPlaying(null);
         notify("Local server stopped", "error");
       }
@@ -151,6 +162,7 @@ export default function App() {
     setMovies([]);
     setModalMovie(null);
     setEpisodesView(null);
+    setPanel(null);
     setPlaying(null);
   };
 
@@ -165,6 +177,23 @@ export default function App() {
     setModalMovie((cur) => (cur?.id === movie.id ? { ...cur, favorite: next } : cur));
     try {
       await client.setFavorite(movie.id, next);
+    } catch (err) {
+      revert(movie);
+      notify(err.message, "error");
+    }
+  };
+
+  const toggleWatchlist = async (movie) => {
+    if (!client) return;
+    const next = !movie.watchlist;
+    const revert = (m) => {
+      setMovies((list) => list.map((x) => (x.id === m.id ? { ...x, watchlist: !next } : x)));
+      setModalMovie((cur) => (cur?.id === m.id ? { ...cur, watchlist: !next } : cur));
+    };
+    setMovies((list) => list.map((x) => (x.id === movie.id ? { ...x, watchlist: next } : x)));
+    setModalMovie((cur) => (cur?.id === movie.id ? { ...cur, watchlist: next } : cur));
+    try {
+      await client.setWatchlist(movie.id, next);
     } catch (err) {
       revert(movie);
       notify(err.message, "error");
@@ -227,7 +256,18 @@ export default function App() {
   const filtered = useMemo(() => filterMovies(movies, selection, query), [movies, selection, query]);
   const collections = useMemo(() => smartCollections(movies), [movies]);
   const genres = useMemo(() => smartGenres(movies, 6), [movies]);
+  const allCollections = useMemo(() => smartCollections(movies, { max: Infinity }), [movies]);
   const counts = useMemo(() => viewCounts(movies), [movies]);
+
+  // User-menu entries either narrow the grid (view) or open a full-screen panel.
+  const navigate = (entry) => {
+    if (entry.action === "view") {
+      setSelection({ type: "view", value: entry.value });
+      setSidebarOpen(false);
+    } else if (entry.action === "panel") {
+      setPanel(entry.value);
+    }
+  };
 
   if (!conn || !client) {
     return <ConnectScreen busy={busy} error={error} onLocal={connectLocal} onRemote={connectRemote} />;
@@ -235,7 +275,13 @@ export default function App() {
 
   return (
     <div className="app">
-      <TopBar conn={conn} query={query} onQuery={setQuery} onDisconnect={disconnect} />
+      <TopBar
+        conn={conn}
+        query={query}
+        onQuery={setQuery}
+        onDisconnect={disconnect}
+        onNavigate={navigate}
+      />
       <SidebarToggle open={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
       <div
         className={"scrim" + (sidebarOpen ? " show" : "")}
@@ -284,6 +330,7 @@ export default function App() {
                       onOpen={openModal}
                       onGetInfo={askForMeta}
                       onToggleFavorite={toggleFavorite}
+                      onToggleWatchlist={toggleWatchlist}
                     />
                   ))}
                 </div>
@@ -300,6 +347,7 @@ export default function App() {
           onClose={() => setModalMovie(null)}
           onPlay={setPlaying}
           onToggleFavorite={() => toggleFavorite(modalMovie)}
+          onToggleWatchlist={() => toggleWatchlist(modalMovie)}
           onUpdate={setModalMovie}
           onGetInfo={askForMeta}
           onViewEpisodes={openEpisodes}
@@ -312,6 +360,23 @@ export default function App() {
           client={client}
           onClose={() => setEpisodesView(null)}
           onPlay={playEpisode}
+        />
+      )}
+
+      {panel && (
+        <UserPanel
+          kind={panel}
+          conn={conn}
+          movies={movies}
+          counts={counts}
+          collections={allCollections}
+          genres={genres}
+          onSelect={setSelection}
+          onDisconnect={() => {
+            setPanel(null);
+            disconnect();
+          }}
+          onClose={() => setPanel(null)}
         />
       )}
 

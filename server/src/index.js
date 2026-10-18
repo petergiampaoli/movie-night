@@ -7,6 +7,7 @@ const { loadConfig } = require("./config");
 const { Library, POSTERS_DIR } = require("./library");
 const { streamVideo } = require("./stream");
 const { Favorites } = require("./favorites");
+const { Watchlist } = require("./watchlist");
 const { Tmdb } = require("./tmdb");
 const { writeInfo, writePoster } = require("./metadata");
 const pkg = require("../package.json");
@@ -17,6 +18,7 @@ function createApp({
   apiKey,
   library,
   favorites,
+  watchlist,
   tmdb,
   name = "movienight",
 } = {}) {
@@ -28,6 +30,7 @@ function createApp({
       dataDir: dataDir || cfg.dataDir,
     });
   const favs = favorites || new Favorites(path.join(cfg.dataDir, "favorites.json"));
+  const watch = watchlist || new Watchlist(path.join(cfg.dataDir, "watchlist.json"));
   const tmd = tmdb || new Tmdb(apiKey !== undefined ? apiKey : cfg.apiKey);
 
   function buildMovie(rec) {
@@ -55,6 +58,7 @@ function createApp({
       hasInfo: Boolean(info),
       hasPoster: Boolean(poster),
       favorite: favs.has(rec.id),
+      watchlist: watch.has(rec.id),
       posterUrl: poster ? `/api/movies/${rec.id}/poster` : null,
     };
 
@@ -106,9 +110,11 @@ function createApp({
 
   app.get("/api/movies", (req, res) => {
     const favoritesOnly = req.query.favorites === "1" || req.query.favorites === "true";
+    const watchlistOnly = req.query.watchlist === "1" || req.query.watchlist === "true";
     const kind = req.query.kind === "series" || req.query.kind === "film" ? req.query.kind : null;
     let recs = lib.list();
     if (favoritesOnly) recs = recs.filter((r) => favs.has(r.id));
+    if (watchlistOnly) recs = recs.filter((r) => watch.has(r.id));
     if (kind) recs = recs.filter((r) => (r.kind || "film") === kind);
     let movies = recs.map(buildMovie);
     if (req.query.sort === "added") movies.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
@@ -157,6 +163,21 @@ function createApp({
     if (!rec) return;
     favs.set(rec.id, false);
     res.json({ ok: true, id: rec.id, favorite: false });
+  });
+
+  app.post("/api/movies/:id/watchlist", (req, res) => {
+    const rec = findRec(req, res);
+    if (!rec) return;
+    const on = Boolean(req.body && req.body.watchlist);
+    watch.set(rec.id, on);
+    res.json({ ok: true, id: rec.id, watchlist: on });
+  });
+
+  app.delete("/api/movies/:id/watchlist", (req, res) => {
+    const rec = findRec(req, res);
+    if (!rec) return;
+    watch.set(rec.id, false);
+    res.json({ ok: true, id: rec.id, watchlist: false });
   });
 
   // Opt-in metadata fetch from TheMovieDB. The client MUST send { confirm: true };

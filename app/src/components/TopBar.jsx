@@ -1,37 +1,33 @@
-export function TopBar({ conn, query, onQuery, onDisconnect }) {
-  const displayDir = conn.movieDir ? conn.movieDir.split("/").pop() : conn.baseUrl || "";
-  const label = conn.source === "local" ? "Folder · " + displayDir : "Server · " + conn.baseUrl;
+import { UserMenu } from "./UserMenu.jsx";
 
+export function TopBar({ conn, query, onQuery, onDisconnect, onNavigate }) {
   return (
     <header className="topbar">
-      <div className="brand-block">
+      <div className="topbar-left">
+        <div className="search">
+          <span className="search-icon">⌕</span>
+          <input
+            value={query}
+            onChange={(e) => onQuery(e.target.value)}
+            placeholder="Search…"
+            spellCheck={false}
+          />
+          {query && (
+            <button className="clear" onClick={() => onQuery("")} title="Clear search">
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="topbar-center">
         <div className="logo">
           movie<span>night</span>
         </div>
       </div>
 
-      <div className="search">
-        <span className="search-icon">⌕</span>
-        <input
-          value={query}
-          onChange={(e) => onQuery(e.target.value)}
-          placeholder="Search…"
-          spellCheck={false}
-        />
-        {query && (
-          <button className="clear" onClick={() => onQuery("")} title="Clear search">
-            ✕
-          </button>
-        )}
-      </div>
-
       <div className="topbar-right">
-        <span className="server-chip" title={label}>
-          {conn.source === "local" ? "📁" : "🖧"} {displayDir}
-        </span>
-        <button className="btn btn-ghost" onClick={onDisconnect}>
-          Disconnect
-        </button>
+        <UserMenu conn={conn} onDisconnect={onDisconnect} onNavigate={onNavigate} />
       </div>
     </header>
   );

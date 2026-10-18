@@ -61,6 +61,14 @@ export function Sidebar({ open, selection, onSelect, counts, collections, genres
           <span className="nav-label">Favorites</span>
           {counts.favorites > 0 && <span className="nav-count">{counts.favorites}</span>}
         </button>
+        <button
+          className={"nav-item" + (isActive(selection, "view", "watchlist") ? " active" : "")}
+          onClick={() => pick({ type: "view", value: "watchlist" })}
+        >
+          <span className="nav-icon">🔖</span>
+          <span className="nav-label">Watchlist</span>
+          {counts.watchlist > 0 && <span className="nav-count">{counts.watchlist}</span>}
+        </button>
 
         <Accordion title="Smart Collections" icon="🗂" defaultOpen>
           {collections.length === 0 && <p className="sidebar-empty">No director data yet.</p>}

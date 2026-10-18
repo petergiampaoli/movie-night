@@ -10,6 +10,7 @@ const {
   resetFavorites,
   gotoHome,
   connectToServer,
+  openLibrary,
   selectNav,
   openSidebar,
   toggleSidebar,
@@ -171,9 +172,65 @@ test("disconnect returns the user to the home screen", async ({ page }) => {
   await gotoHome(page);
   await connectToServer(page);
 
-  await page.click(".topbar-right .btn-ghost"); // Disconnect
+  await page.locator(".user-avatar").click();
+  await expect(page.locator(".user-dropdown")).toBeVisible();
+  await page.locator(".user-dropdown-item", { hasText: "Disconnect from server" }).click();
   await expect(page.locator(".connect-screen")).toBeVisible();
   await expect(page.locator(".topbar")).toHaveCount(0);
+});
+
+test("user menu entries open their destinations", async ({ page }) => {
+  await openLibrary(page);
+
+  const menuItem = async (label) => {
+    // A full-screen panel covers the top bar, so return to the library first.
+    const back = page.locator(".panel-top .btn-ghost");
+    if (await back.count()) await back.click();
+    await page.locator(".user-avatar").click();
+    await expect(page.locator(".user-dropdown")).toBeVisible();
+    await page.locator(".user-dropdown-item", { hasText: label }).click();
+    await expect(page.locator(".user-dropdown")).toHaveCount(0);
+  };
+
+  // Save a film to the watchlist from its modal so the Watchlist view has content.
+  await page.locator(".grid .card").first().click();
+  await expect(page.locator(".modal-backdrop")).toBeVisible();
+  await page.locator(".modal .btn", { hasText: "Watchlist" }).click();
+  await page.locator(".modal-close").click();
+  await expect(page.locator(".modal-backdrop")).toHaveCount(0);
+
+  // View entries narrow the grid and show their own title.
+  await menuItem("Diary");
+  await expect(page.locator(".row-title")).toContainText("Diary");
+  await menuItem("Likes");
+  await expect(page.locator(".row-title")).toContainText("Likes");
+  await menuItem("Watchlist");
+  await expect(page.locator(".row-title")).toContainText("Watchlist");
+  await expect(page.locator(".grid .card")).toHaveCount(1);
+
+  // Panel entries open a full-screen panel, closed with Back.
+  await menuItem("Profile");
+  await expect(page.locator(".panel-view .panel-title")).toHaveText("Profile");
+  await expect(page.locator(".panel-view .stat-label", { hasText: "Films" })).toBeVisible();
+
+  await menuItem("Lists");
+  await expect(page.locator(".panel-view .panel-title")).toHaveText("Lists");
+
+  await menuItem("Tags");
+  await expect(page.locator(".panel-view .panel-title")).toHaveText("Tags");
+
+  await menuItem("Reviews");
+  await expect(page.locator(".panel-view .panel-title")).toHaveText("Reviews");
+  await expect(page.locator(".panel-view .panel-empty")).toBeVisible();
+
+  await menuItem("Settings");
+  await expect(page.locator(".panel-view .panel-title")).toHaveText("Settings");
+  await expect(page.locator(".panel-view .btn-danger")).toHaveText("Disconnect from server");
+
+  // Back returns to the library.
+  await page.locator(".panel-view button", { hasText: "Back" }).click();
+  await expect(page.locator(".panel-view")).toHaveCount(0);
+  await expect(page.locator(".topbar")).toBeVisible();
 });
 
 test("the app rejects an unreachable server with an inline error", async ({ page }) => {

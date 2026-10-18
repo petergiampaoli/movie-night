@@ -166,6 +166,29 @@ test("favorites toggle persists", async (t) => {
   assert.equal(empty.length, 0);
 });
 
+test("watchlist toggle persists and is filterable", async (t) => {
+  await withServer(t, {});
+  afterCtx(t);
+  const id = t.movies[0].id;
+  assert.equal(t.movies[0].watchlist, false);
+
+  const set = await (await fetch(`${t.baseUrl}/api/movies/${id}/watchlist`, {
+    method: "POST",
+    body: JSON.stringify({ watchlist: true }),
+    headers: { "Content-Type": "application/json" },
+  })).json();
+  assert.equal(set.watchlist, true);
+
+  const want = (await (await fetch(`${t.baseUrl}/api/movies?watchlist=1`)).json()).movies;
+  assert.equal(want.length, 1);
+  assert.equal(want[0].id, id);
+
+  await fetch(`${t.baseUrl}/api/movies/${id}/watchlist`, { method: "DELETE" });
+  const empty = (await (await fetch(`${t.baseUrl}/api/movies?watchlist=1`)).json()).movies;
+  assert.equal(empty.length, 0);
+  assert.equal((await (await fetch(`${t.baseUrl}/api/movies/${id}`)).json()).movie.watchlist, false);
+});
+
 test("stream serves full and ranged responses", async (t) => {
   const movieDir = makeMovieDir([["movie.mp4", VIDEO_BYTES]]);
   await withServer(t, { movieDir });

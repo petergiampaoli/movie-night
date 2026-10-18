@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, onGetInfo, onViewEpisodes }) {
+export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, onToggleWatchlist, onGetInfo, onViewEpisodes }) {
   const backdropRef = useRef(null);
 
   useEffect(() => {
@@ -85,6 +85,13 @@ export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, o
             )}
             <button className={`btn btn-fav ${m.favorite ? "on" : ""}`} onClick={onToggleFavorite}>
               {m.favorite ? "♥ In Favorites" : "♡ Save to Favorites"}
+            </button>
+            <button
+              className={`btn btn-watch ${m.watchlist ? "on" : ""}`}
+              onClick={onToggleWatchlist}
+              title="Add this title to your watchlist"
+            >
+              {m.watchlist ? "🔖 In Watchlist" : "🔖 Add to Watchlist"}
             </button>
             {externalLinks.map((l) => (
               <button

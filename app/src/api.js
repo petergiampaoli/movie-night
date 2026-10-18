@@ -26,6 +26,8 @@ export function api(baseUrl) {
     movie: (id) => j("GET", `api/movies/${encodeURIComponent(id)}`),
     setFavorite: (id, favorite) =>
       j("POST", `api/movies/${encodeURIComponent(id)}/favorite`, { favorite }),
+    setWatchlist: (id, watchlist) =>
+      j("POST", `api/movies/${encodeURIComponent(id)}/watchlist`, { watchlist }),
     fetchMeta: (id, confirm = true) =>
       j("POST", `api/movies/${encodeURIComponent(id)}/meta`, { confirm }),
   };

@@ -2,9 +2,15 @@
 // Kept dependency-free so it can be unit-tested with `node --test` (no DOM/React).
 //
 // A "selection" describes what the sidebar has narrowed the grid to:
-//   { type: "view",   value: "films" | "series" | "new" | "favorites" }
+//   { type: "view",   value: "films" | "series" | "new" | "favorites" | "watchlist" | "diary" | "likes" }
 //   { type: "director", value: "Wes Anderson" }   (Smart Collections)
 //   { type: "genre",    value: "Animation" }      (Smart Genres)
+//
+// The user menu maps Letterboxd-style entries onto these views:
+//   Profile/Settings/Lists/Tags/Reviews -> full-screen panels (not filters)
+//   Diary  -> the "diary" view (chronological, same ordering as "new")
+//   Likes  -> the "likes" view (favourites)
+//   Watchlist -> the "watchlist" view
 
 export function directorList(movie) {
   if (Array.isArray(movie?.directors) && movie.directors.length) return movie.directors;
@@ -27,6 +33,12 @@ export function filterMovies(movies, selection, query) {
       case "favorites":
         list = list.filter((m) => m.favorite);
         break;
+      case "likes":
+        list = list.filter((m) => m.favorite);
+        break;
+      case "watchlist":
+        list = list.filter((m) => m.watchlist);
+        break;
       case "series":
         list = list.filter((m) => m.kind === "series");
         break;
@@ -34,6 +46,9 @@ export function filterMovies(movies, selection, query) {
         list = list.filter((m) => m.kind !== "series");
         break;
       case "new":
+        list = list.slice().sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
+        break;
+      case "diary":
         list = list.slice().sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
         break;
       default:
@@ -48,13 +63,15 @@ export function viewCounts(movies) {
     films: movies.filter((m) => m.kind !== "series").length,
     series: movies.filter((m) => m.kind === "series").length,
     favorites: movies.filter((m) => m.favorite).length,
+    watchlist: movies.filter((m) => m.watchlist).length,
     new: movies.length,
   };
 }
 
 // Smart Collections: the top directors by number of films.
 // Rule: libraries of 30 films or fewer surface one director; larger ones surface two.
-export function smartCollections(movies, { threshold = 30 } = {}) {
+// Pass { max } to override the cap (e.g. Infinity to list every director).
+export function smartCollections(movies, { threshold = 30, max } = {}) {
   const counts = new Map();
   for (const m of movies) {
     for (const d of directorList(m)) counts.set(d, (counts.get(d) || 0) + 1);
@@ -62,8 +79,8 @@ export function smartCollections(movies, { threshold = 30 } = {}) {
   const ranked = [...counts.entries()]
     .map(([label, count]) => ({ id: `dir:${label}`, label, count }))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-  const max = movies.length > threshold ? 2 : 1;
-  return ranked.slice(0, max);
+  const cap = max != null ? max : movies.length > threshold ? 2 : 1;
+  return ranked.slice(0, cap);
 }
 
 // Smart Genres: the most common genres across the library (default: top 6).

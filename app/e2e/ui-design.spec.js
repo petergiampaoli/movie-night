@@ -70,18 +70,30 @@ test.describe("Design - top bar", () => {
     await openLibrary(page);
   });
 
-  test("is a sticky bar: brand left, search middle, disconnect right", async ({ page }) => {
+  test("is a sticky bar with the logo centred, search left, and a user menu", async ({ page }) => {
     const bar = page.locator(".topbar");
     await expect(bar).toHaveCSS("position", "sticky");
     expect((await bar.boundingBox()).y).toBeLessThanOrEqual(1);
 
-    const brand = await page.locator(".brand-block").boundingBox();
     const search = await page.locator(".search").boundingBox();
-    const right = await page.locator(".topbar-right").boundingBox();
-    expect(brand.x).toBeLessThan(search.x);
-    expect(search.x).toBeLessThan(right.x);
+    const logo = await page.locator(".topbar .logo").boundingBox();
+    const user = await page.locator(".user-avatar").boundingBox();
+    const barBox = await bar.boundingBox();
 
-    await expect(page.locator(".topbar-right .btn-ghost")).toHaveText("Disconnect");
+    // Search sits on the left side of the top bar.
+    expect(search.x).toBeGreaterThanOrEqual(barBox.x - 0.5);
+    expect(search.x).toBeLessThan(logo.x);
+
+    // Logo is approximately centred horizontally.
+    expect(Math.abs(logo.x + logo.width / 2 - (barBox.x + barBox.width / 2))).toBeLessThanOrEqual(4);
+
+    // User avatar sits on the right.
+    expect(user.x + user.width).toBeLessThanOrEqual(barBox.x + barBox.width + 0.5);
+
+    // Clicking the user avatar opens a Letterboxd-style flyout with a Disconnect option.
+    await page.click(".user-avatar");
+    await expect(page.locator(".user-dropdown")).toBeVisible();
+    await expect(page.locator(".user-dropdown-item", { hasText: "Disconnect from server" })).toBeVisible();
   });
 
   test("floating toggle is vertically centred, hidden bars/chevron swap, and it slides the accordion", async ({ page }) => {
@@ -172,20 +184,26 @@ test.describe("Design - browse grid & cards", () => {
     await expect(spir.locator(".star")).toContainText("★ 8.5");
   });
 
-  test("favourite button is hidden until hover, pinned top-right, circular", async ({ page }) => {
+  test("favourite & watchlist buttons are hidden until hover, pinned top-right, circular", async ({ page }) => {
     const card = page.locator(".grid .card").first();
     const fav = card.locator(".fav-btn");
+    const watch = card.locator(".watch-btn");
 
     await expect(fav).toHaveCSS("opacity", "0");
+    await expect(watch).toHaveCSS("opacity", "0");
     await card.hover();
     await expect(fav).toHaveCSS("opacity", "1");
+    await expect(watch).toHaveCSS("opacity", "1");
 
     const c = await card.boundingBox();
     const f = await fav.boundingBox();
+    const w = await watch.boundingBox();
     expect(f.x + f.width).toBeLessThanOrEqual(c.x + c.width + 0.5); // within right edge
     expect(f.x).toBeGreaterThan(c.x + c.width / 2); // right half
     expect(f.y).toBeLessThan(c.y + c.height / 2); // top half
+    expect(w.x + w.width).toBeLessThanOrEqual(f.x + 0.5); // watchlist sits left of favourite
     await expect(fav).toHaveCSS("border-radius", "50%");
+    await expect(watch).toHaveCSS("border-radius", "50%");
   });
 
   test("hover reveals a centred play overlay", async ({ page }) => {
@@ -231,6 +249,7 @@ test.describe("Design - title modal", () => {
     await expect(page.locator(".modal .actions")).toHaveCSS("display", "flex");
     await expect(page.locator(".modal .btn-play")).toHaveCSS("background-color", "rgb(255, 255, 255)");
     await expect(page.locator(".modal .btn-fav")).toBeVisible();
+    await expect(page.locator(".modal .btn-watch")).toBeVisible();
   });
 });
 

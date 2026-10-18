@@ -1,4 +1,4 @@
-export function MovieCard({ movie, client, onOpen, onGetInfo, onToggleFavorite }) {
+export function MovieCard({ movie, client, onOpen, onGetInfo, onToggleFavorite, onToggleWatchlist }) {
   const initials = (movie.title || "?")
     .split(/\s+/)
     .filter(Boolean)
@@ -29,6 +29,22 @@ export function MovieCard({ movie, client, onOpen, onGetInfo, onToggleFavorite }
         }}
       >
         ♥
+      </button>
+
+      <button
+        className={`watch-btn ${movie.watchlist ? "on" : ""}`}
+        title={movie.watchlist ? "Remove from watchlist" : "Add to watchlist"}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleWatchlist?.(movie);
+        }}
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+          <path
+            fill="currentColor"
+            d="M7 3h10a1 1 0 0 1 1 1v16.2a.8.8 0 0 1-1.24.67L12 17.4l-4.76 3.47A.8.8 0 0 1 6 20.2V4a1 1 0 0 1 1-1Z"
+          />
+        </svg>
       </button>
 
       <div className="poster">

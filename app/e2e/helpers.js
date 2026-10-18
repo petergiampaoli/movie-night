@@ -17,6 +17,17 @@ async function resetFavorites() {
   );
 }
 
+// Clear every watchlist entry so tests start from a known state.
+async function resetWatchlist() {
+  const res = await fetch(`${API_URL}/api/movies`);
+  const { movies } = await res.json();
+  await Promise.all(
+    movies.map((m) =>
+      fetch(`${API_URL}/api/movies/${m.id}/watchlist`, { method: "DELETE" })
+    )
+  );
+}
+
 // Load the app and stop on the home (connect) screen.
 async function gotoHome(page) {
   await page.goto("/");
@@ -34,6 +45,7 @@ async function connectToServer(page, url = API_URL) {
 // Full setup used by most in-app tests.
 async function openLibrary(page) {
   await resetFavorites();
+  await resetWatchlist();
   await gotoHome(page);
   await connectToServer(page);
 }
@@ -84,6 +96,7 @@ module.exports = {
   NAV_ITEMS,
   SMART_SECTIONS,
   resetFavorites,
+  resetWatchlist,
   gotoHome,
   connectToServer,
   openLibrary,
