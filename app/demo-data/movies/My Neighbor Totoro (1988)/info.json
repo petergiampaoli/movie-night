@@ -21,5 +21,67 @@
   "tmdbId": 8392,
   "imdbId": "tt0096283",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:41.509Z"
+  "fetchedAt": "2026-10-16T02:45:41.509Z",
+  "cast": [
+    {
+      "name": "Noriko Hidaka",
+      "character": "Satsuki Kusakabe (voice)",
+      "order": 0
+    },
+    {
+      "name": "Chika Sakamoto",
+      "character": "Mei Kusakabe (voice)",
+      "order": 1
+    },
+    {
+      "name": "Hitoshi Takagi",
+      "character": "Totoro (voice)",
+      "order": 2
+    },
+    {
+      "name": "Shigesato Itoi",
+      "character": "Tatsuo Kusakabe (voice)",
+      "order": 3
+    },
+    {
+      "name": "Sumi Shimamoto",
+      "character": "Yasuko Kusakabe (voice)",
+      "order": 4
+    },
+    {
+      "name": "Tanie Kitabayashi",
+      "character": "Granny (voice)",
+      "order": 5
+    },
+    {
+      "name": "Toshiyuki Amagasa",
+      "character": "Kanta Ogaki (voice)",
+      "order": 6
+    },
+    {
+      "name": "Yuko Maruyama",
+      "character": "Kanta's Mother (voice)",
+      "order": 7
+    },
+    {
+      "name": "Masashi Hirose",
+      "character": "Kanta's Father (voice)",
+      "order": 8
+    },
+    {
+      "name": "Reiko Suzuki",
+      "character": "Kanta's Aunt (voice)",
+      "order": 9
+    },
+    {
+      "name": "Machiko Washio",
+      "character": "Teacher (voice)",
+      "order": 10
+    },
+    {
+      "name": "Naoki Tatsuta",
+      "character": "Catbus (voice)",
+      "order": 11
+    }
+  ]
 }

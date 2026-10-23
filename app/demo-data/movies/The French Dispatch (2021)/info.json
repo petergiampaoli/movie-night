@@ -21,5 +21,67 @@
   "tmdbId": 542178,
   "imdbId": "tt8847712",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:33.852Z"
+  "fetchedAt": "2026-10-16T02:45:33.852Z",
+  "cast": [
+    {
+      "name": "Benicio del Toro",
+      "character": "Moses Rosenthaler",
+      "order": 0
+    },
+    {
+      "name": "Adrien Brody",
+      "character": "Julian Cadazio",
+      "order": 1
+    },
+    {
+      "name": "Tilda Swinton",
+      "character": "J.K.L. Berensen",
+      "order": 2
+    },
+    {
+      "name": "Léa Seydoux",
+      "character": "Simone",
+      "order": 3
+    },
+    {
+      "name": "Frances McDormand",
+      "character": "Lucinda Krementz",
+      "order": 4
+    },
+    {
+      "name": "Timothée Chalamet",
+      "character": "Zeffirelli",
+      "order": 5
+    },
+    {
+      "name": "Lyna Khoudri",
+      "character": "Juliette",
+      "order": 6
+    },
+    {
+      "name": "Jeffrey Wright",
+      "character": "Roebuck Wright",
+      "order": 7
+    },
+    {
+      "name": "Mathieu Amalric",
+      "character": "The Commissaire",
+      "order": 8
+    },
+    {
+      "name": "Steve Park",
+      "character": "Nescaffier",
+      "order": 9
+    },
+    {
+      "name": "Bill Murray",
+      "character": "Arthur Howitzer, Jr.",
+      "order": 10
+    },
+    {
+      "name": "Owen Wilson",
+      "character": "Herbsaint Sazerac",
+      "order": 11
+    }
+  ]
 }

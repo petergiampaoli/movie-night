@@ -6,6 +6,15 @@ import {
   smartCollections,
   smartGenres,
   directorList,
+  actorList,
+  personList,
+  sortMovies,
+  keepsOwnOrder,
+  nextKind,
+  KINDS,
+  SORTS,
+  DEFAULT_SORT,
+  DEFAULT_DIR,
 } from "../src/viewFilter.mjs";
 
 const MOVIES = [
@@ -17,6 +26,11 @@ const MOVIES = [
 ];
 
 const view = (value) => ({ type: "view", value });
+
+test("filterMovies view 'all' returns every title", () => {
+  const got = filterMovies(MOVIES, view("all"), "");
+  assert.equal(got.length, 5);
+});
 
 test("filterMovies view 'films' returns only non-series", () => {
   const got = filterMovies(MOVIES, view("films"), "");
@@ -78,8 +92,15 @@ test("directorList accepts the singular director field", () => {
   assert.deepEqual(directorList({}), []);
 });
 
-test("viewCounts tallies films, series, favorites, watchlist and total", () => {
-  assert.deepEqual(viewCounts(MOVIES), { films: 3, series: 2, favorites: 2, watchlist: 2, new: 5 });
+test("viewCounts tallies all, films, series, favorites, watchlist and total", () => {
+  assert.deepEqual(viewCounts(MOVIES), {
+    all: 5,
+    films: 3,
+    series: 2,
+    favorites: 2,
+    watchlist: 2,
+    new: 5,
+  });
 });
 
 test("smartCollections surfaces one director for libraries of 30 or fewer", () => {
@@ -113,4 +134,119 @@ test("smartGenres returns the most common genres, capped at six", () => {
 test("smartGenres caps the list length", () => {
   const got = smartGenres(MOVIES, 2);
   assert.equal(got.length, 2);
+});
+
+// --- sort filter -------------------------------------------------------------
+
+const RATED = [
+  { id: "low", kind: "film", title: "Zebra", rating: 5.1, year: 1999, runtime: 90 },
+  { id: "high", kind: "film", title: "Alpha", rating: 8.9, year: 2010, runtime: 140 },
+  { id: "mid", kind: "film", title: "Migration", rating: 7.2, year: 2005, runtime: 105 },
+  { id: "unrated", kind: "film", title: "Nobody", rating: null, year: null, runtime: null },
+];
+
+test("sortMovies defaults to highest ranking first", () => {
+  const got = sortMovies(RATED, DEFAULT_SORT);
+  assert.deepEqual(got.map((m) => m.id), ["high", "mid", "low", "unrated"]);
+});
+
+test("sortMovies unrated titles sink to the bottom", () => {
+  const got = sortMovies(RATED, "ranking");
+  assert.equal(got[got.length - 1].id, "unrated");
+});
+
+test("sortMovies release date is newest first", () => {
+  const got = sortMovies(RATED, "release");
+  assert.deepEqual(got.map((m) => m.id), ["high", "mid", "low", "unrated"]);
+});
+
+test("sortMovies duration is longest first", () => {
+  const got = sortMovies(RATED, "duration");
+  assert.deepEqual(got.map((m) => m.id), ["high", "mid", "low", "unrated"]);
+});
+
+test("sortMovies alphabetical is A-Z by title", () => {
+  // Titles: Alpha, Migration, Nobody, Zebra
+  const got = sortMovies(RATED, "alphabetical");
+  assert.deepEqual(got.map((m) => m.id), ["high", "mid", "unrated", "low"]);
+});
+
+test("SORTS offers the four options and defaults to ranking", () => {
+  assert.deepEqual(
+    SORTS.map((s) => s.id),
+    ["ranking", "release", "duration", "alphabetical"]
+  );
+  assert.equal(DEFAULT_SORT, "ranking");
+  assert.equal(DEFAULT_DIR, null);
+});
+
+test("nextKind cycles films -> series -> all -> films", () => {
+  assert.deepEqual(KINDS, ["films", "series", "all"]);
+  assert.equal(nextKind("films"), "series");
+  assert.equal(nextKind("series"), "all");
+  assert.equal(nextKind("all"), "films");
+  // Unknown values restart the cycle from films.
+  assert.equal(nextKind("favorites"), "films");
+});
+
+test("sortMovies direction 'desc' reverses alphabetical to Z-A", () => {
+  const got = sortMovies(RATED, "alphabetical", "desc");
+  assert.deepEqual(got.map((m) => m.id), ["low", "unrated", "mid", "high"]);
+});
+
+test("sortMovies direction 'asc' flips ranking to lowest first, unrated still last", () => {
+  const got = sortMovies(RATED, "ranking", "asc");
+  assert.deepEqual(got.map((m) => m.id), ["low", "mid", "high", "unrated"]);
+});
+
+test("sortMovies direction 'asc' flips release to oldest first", () => {
+  const got = sortMovies(RATED, "release", "asc");
+  assert.deepEqual(got.map((m) => m.id), ["low", "mid", "high", "unrated"]);
+});
+
+test("sortMovies direction 'desc' flips alphabetical's natural asc", () => {
+  const natural = sortMovies(RATED, "alphabetical");
+  const flipped = sortMovies(RATED, "alphabetical", "desc");
+  assert.deepEqual(flipped.map((m) => m.id), [...natural.map((m) => m.id)].reverse());
+});
+
+test("keepsOwnOrder is true only for the chronological views", () => {
+  assert.equal(keepsOwnOrder(view("new")), true);
+  assert.equal(keepsOwnOrder(view("diary")), true);
+  assert.equal(keepsOwnOrder(view("films")), false);
+  assert.equal(keepsOwnOrder(view("favorites")), false);
+  assert.equal(keepsOwnOrder({ type: "genre", value: "Drama" }), false);
+});
+
+// --- search by people --------------------------------------------------------
+
+test("filterMovies search matches a director, not just the title", () => {
+  const list = [
+    { id: "x", kind: "film", title: "Some Title", directors: ["Hayao Miyazaki"] },
+    { id: "y", kind: "film", title: "Other Film", directors: ["Ridley Scott"] },
+  ];
+  assert.deepEqual(filterMovies(list, view("films"), "miyazaki").map((m) => m.id), ["x"]);
+});
+
+test("filterMovies search matches a top billed actor", () => {
+  const list = [
+    { id: "x", kind: "film", title: "Howl", cast: [{ name: "Emily Blunt", order: 0 }] },
+    { id: "y", kind: "film", title: "Other", cast: ["Tom Hanks"] },
+  ];
+  assert.deepEqual(filterMovies(list, view("films"), "emily").map((m) => m.id), ["x"]);
+  assert.deepEqual(filterMovies(list, view("films"), "hanks").map((m) => m.id), ["y"]);
+});
+
+test("filterMovies people search is case-insensitive and title still matches", () => {
+  const list = [{ id: "x", kind: "film", title: "Moonrise Kingdom", directors: ["Wes Anderson"], cast: [{ name: "Bruce Willis" }] }];
+  assert.deepEqual(filterMovies(list, view("films"), "WES").map((m) => m.id), ["x"]);
+  assert.deepEqual(filterMovies(list, view("films"), "kingdom").map((m) => m.id), ["x"]);
+  assert.deepEqual(filterMovies(list, view("films"), "willis").map((m) => m.id), ["x"]);
+});
+
+test("actorList and personList read both string and object cast entries", () => {
+  const m = { directors: ["Wes Anderson"], cast: [{ name: "Bill Murray" }, "Owen Wilson"] };
+  assert.deepEqual(actorList(m), ["Bill Murray", "Owen Wilson"]);
+  assert.deepEqual(personList(m), ["Wes Anderson", "Bill Murray", "Owen Wilson"]);
+  assert.deepEqual(actorList({}), []);
 });

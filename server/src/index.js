@@ -76,6 +76,7 @@ function createApp({
       genres: (info && info.genres) || [],
       runtime: (info && info.runtime) || null,
       directors: (info && info.directors) || [],
+      cast: (info && info.cast) || [],
       studios: (info && info.studios) || [],
       tmdbId: (info && info.tmdbId) || null,
       imdbId: (info && info.imdbId) || null,

@@ -139,10 +139,12 @@ test.describe("Design - top bar", () => {
       await expect(page.locator(`.sidebar .accordion-head:has-text("${label}")`)).toBeVisible();
     }
 
-    // The default view (Films) is accented in forest green.
+    // The default view (All) is accented in forest green.
+    const all = page.locator('.sidebar .nav-item:has-text("All")');
+    await expect(all).toHaveClass(/active/);
+    await expect(all).toHaveCSS("color", "rgb(56, 160, 62)"); // --accent-hover
     const films = page.locator('.sidebar .nav-item:has-text("Films")');
-    await expect(films).toHaveClass(/active/);
-    await expect(films).toHaveCSS("color", "rgb(56, 160, 62)"); // --accent-hover
+    await expect(films).not.toHaveClass(/active/);
   });
 
   test("Smart Genres accordion expands to the library's six most common genres", async ({ page }) => {
@@ -166,7 +168,7 @@ test.describe("Design - browse grid & cards", () => {
 
   test("cards flow in a grid with 2:3 poster artwork", async ({ page }) => {
     await expect(page.locator(".grid")).toHaveCSS("display", "grid");
-    await expect(page.locator(".grid .card")).toHaveCount(24); // all real films
+    await expect(page.locator(".grid .card")).toHaveCount(25); // all titles (24 films + 1 series)
 
     const c0 = await page.locator(".grid .card").nth(0).boundingBox();
     const c1 = await page.locator(".grid .card").nth(1).boundingBox();
@@ -328,5 +330,157 @@ test.describe("Design - player", () => {
     await expect(video).toHaveAttribute("controls", "");
     const vb = await video.boundingBox();
     expect(vb.width).toBeLessThanOrEqual(vp.width + 1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Library sort filter + people search
+// ---------------------------------------------------------------------------
+test.describe("Design - library filter", () => {
+  test.beforeEach(async ({ page }) => {
+    await openLibrary(page);
+    // The grid must be unobstructed: make sure the nav scrim is not shown.
+    if ((await page.locator(".sidebar-toggle").getAttribute("aria-expanded")) === "true") {
+      await toggleSidebar(page);
+    }
+    await expect(page.locator(".scrim")).not.toHaveClass(/show/);
+  });
+
+  const titles = (page) => page.locator(".grid .card-title").allTextContents();
+
+  test("filter shares the header row with the title and defaults to highest ranking", async ({ page }) => {
+    const header = page.locator(".library-header");
+    const title = page.locator(".library-header .row-title");
+    const bar = page.locator(".library-header .filter-bar");
+    await expect(header).toBeVisible();
+    await expect(title).toContainText("All"); // default view
+    await expect(bar).toBeVisible();
+
+    // Same horizontal band as the title, right-aligned within the content column.
+    const titleBox = await title.boundingBox();
+    const barBox = await bar.boundingBox();
+    expect(Math.abs(titleBox.y + titleBox.height / 2 - (barBox.y + barBox.height / 2))).toBeLessThanOrEqual(6);
+    const contentBox = await page.locator(".content").boundingBox();
+    const contentPadRight = 28; // .content { padding: 28px ... }
+    expect(contentBox.x + contentBox.width - contentPadRight - (barBox.x + barBox.width)).toBeLessThanOrEqual(4);
+
+    const select = page.locator("#sort-select");
+    await expect(select).toHaveValue("ranking");
+    await expect(select.locator("option")).toHaveText([
+      "Highest ranking",
+      "Release date",
+      "Duration",
+      "Alphabetical",
+    ]);
+
+    // The direction caret starts neutral (↕).
+    await expect(page.locator(".sort-dir")).toHaveText("↕");
+
+    // Default order: rating desc (Spirited Away tops the demo library).
+    expect((await titles(page))[0]).toBe("Spirited Away");
+  });
+
+  test("the direction caret toggles descending then ascending", async ({ page }) => {
+    const dir = page.locator(".sort-dir");
+    await expect(dir).toHaveText("↕");
+
+    const natural = await titles(page);
+    expect(natural[0]).toBe("Spirited Away");
+
+    // First click: descending (▼). Ranking is already desc, so no reordering.
+    await dir.click();
+    await expect(dir).toHaveText("▼");
+    expect(await titles(page)).toEqual(natural);
+
+    // Second click: ascending (▲). Lowest-rated sinks, unrated stays last.
+    await dir.click();
+    await expect(dir).toHaveText("▲");
+    const asc = await titles(page);
+    expect(asc).not.toEqual(natural);
+    expect(asc[asc.length - 1]).toBe("Spirited Away"); // top-rated last when flipped
+    expect(asc.filter((t) => t === "Adventure Time")).toHaveLength(1);
+
+    // Third click: back to descending.
+    await dir.click();
+    await expect(dir).toHaveText("▼");
+    expect(await titles(page)).toEqual(natural);
+  });
+
+  test("picking a different sort reorders the grid", async ({ page }) => {
+    const before = await titles(page);
+    expect(before[0]).toBe("Spirited Away");
+
+    await page.selectOption("#sort-select", "alphabetical");
+    const alpha = await titles(page);
+    expect(alpha[0]).toBe("Adventure Time"); // "All" view includes the series
+    expect([...alpha].sort()).toEqual(alpha);
+    expect(alpha).not.toEqual(before);
+
+    await page.selectOption("#sort-select", "release");
+    const release = await titles(page);
+    expect(release[0]).toBe("The Phoenician Scheme"); // newest demo film (2025)
+
+    await page.selectOption("#sort-select", "duration");
+    const duration = await titles(page);
+    expect(duration[0]).toBe("Princess Mononoke"); // 134 min, longest
+
+    // Back to the default.
+    await page.selectOption("#sort-select", "ranking");
+    expect(await titles(page)).toEqual(before);
+  });
+
+  test("the header icon cycles films, series and all", async ({ page }) => {
+    const icon = page.locator(".library-header .kind-icon");
+    await expect(icon).toHaveText("🎞️"); // "All" is the default
+    expect(await titles(page)).toHaveLength(25); // 24 films + 1 series
+
+    await icon.click();
+    await expect(icon).toHaveText("🎬"); // films
+    expect(await titles(page)).toHaveLength(24);
+
+    await icon.click();
+    await expect(icon).toHaveText("📺"); // series
+    expect(await titles(page)).toHaveLength(1);
+    expect((await titles(page))[0]).toBe("Adventure Time");
+
+    await icon.click();
+    await expect(icon).toHaveText("🎞️"); // back to all
+    expect(await titles(page)).toHaveLength(25);
+  });
+
+  test("search matches top billed actors and directors, not just titles", async ({ page }) => {
+    const search = page.locator(".topbar .search input");
+
+    await search.fill("Hayao Miyazaki");
+    const byDirector = await titles(page);
+    expect(byDirector).toHaveLength(12);
+    expect(byDirector).toContain("Spirited Away");
+    expect(byDirector).not.toContain("Asteroid City");
+
+    await search.fill("Bill Murray");
+    const byActor = await titles(page);
+    expect(byActor).toHaveLength(9);
+    expect(byActor).toContain("The Grand Budapest Hotel");
+
+    await search.fill("");
+    expect(await titles(page)).toHaveLength(25);
+  });
+
+  test("clicking a person chip in the modal runs that search", async ({ page }) => {
+    await page.locator(".grid .card", { hasText: "Spirited Away" }).first().click();
+    const modal = page.locator(".modal");
+    await expect(modal).toBeVisible();
+
+    // Directors + top billed cast render as clickable chips.
+    await expect(modal.locator(".person-chip", { hasText: "Hayao Miyazaki" })).toBeVisible();
+    await expect(modal.locator(".person-chip", { hasText: "Rumi Hiiragi" })).toBeVisible();
+
+    await modal.locator(".person-chip", { hasText: "Hayao Miyazaki" }).click();
+    await expect(modal).toBeHidden();
+    await expect(page.locator(".topbar .search input")).toHaveValue("Hayao Miyazaki");
+
+    const found = await titles(page);
+    expect(found).toHaveLength(12);
+    expect(found).toContain("Spirited Away");
   });
 });

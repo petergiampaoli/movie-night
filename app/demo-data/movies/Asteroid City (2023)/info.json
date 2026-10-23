@@ -21,5 +21,67 @@
   "tmdbId": 747188,
   "imdbId": "tt14230388",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:35.131Z"
+  "fetchedAt": "2026-10-16T02:45:35.131Z",
+  "cast": [
+    {
+      "name": "Jason Schwartzman",
+      "character": "Augie Steenbeck",
+      "order": 0
+    },
+    {
+      "name": "Scarlett Johansson",
+      "character": "Midge Campbell",
+      "order": 1
+    },
+    {
+      "name": "Tom Hanks",
+      "character": "Stanley Zak",
+      "order": 2
+    },
+    {
+      "name": "Jeffrey Wright",
+      "character": "General Gibson",
+      "order": 3
+    },
+    {
+      "name": "Tilda Swinton",
+      "character": "Dr. Hickenlooper",
+      "order": 4
+    },
+    {
+      "name": "Bryan Cranston",
+      "character": "The Host",
+      "order": 5
+    },
+    {
+      "name": "Edward Norton",
+      "character": "Conrad Earp",
+      "order": 6
+    },
+    {
+      "name": "Adrien Brody",
+      "character": "Schubert Green",
+      "order": 7
+    },
+    {
+      "name": "Liev Schreiber",
+      "character": "J.J. Kellogg",
+      "order": 8
+    },
+    {
+      "name": "Hope Davis",
+      "character": "Sandy Borden",
+      "order": 9
+    },
+    {
+      "name": "Steve Park",
+      "character": "Roger Cho",
+      "order": 10
+    },
+    {
+      "name": "Rupert Friend",
+      "character": "Montana",
+      "order": 11
+    }
+  ]
 }

@@ -42,15 +42,15 @@ test("full journey: home -> browse -> choose film -> play -> pause -> resume", a
   await connectToServer(page);
   await expect(page.locator(".topbar")).toBeVisible();
 
-  // 3. Browse titles (default "Films" view) -------------------------------
-  await expect(page.locator(".grid .card")).toHaveCount(24);
+  // 3. Browse titles (default "All" view) -----------------------------------
+  await expect(page.locator(".grid .card")).toHaveCount(25); // 24 films + 1 series
 
   // 4. Search narrows the grid ----------------------------------------------
   await page.fill(".search input", "totoro");
   await expect(page.locator(".grid .card")).toHaveCount(1);
   await expect(page.locator(".grid .card .card-title")).toHaveText("My Neighbor Totoro");
   await page.click(".search .clear");
-  await expect(page.locator(".grid .card")).toHaveCount(24);
+  await expect(page.locator(".grid .card")).toHaveCount(25);
 
   // 5. Switch views from the left accordion sidebar -------------------------
   await selectNav(page, "Series");

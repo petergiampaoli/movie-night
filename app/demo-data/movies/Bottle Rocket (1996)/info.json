@@ -22,5 +22,67 @@
   "tmdbId": 13685,
   "imdbId": "tt0115734",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:21.901Z"
+  "fetchedAt": "2026-10-16T02:45:21.901Z",
+  "cast": [
+    {
+      "name": "Luke Wilson",
+      "character": "Anthony Adams",
+      "order": 0
+    },
+    {
+      "name": "Owen Wilson",
+      "character": "Dignan",
+      "order": 1
+    },
+    {
+      "name": "Robert Musgrave",
+      "character": "Bob Mapplethorpe",
+      "order": 2
+    },
+    {
+      "name": "Lumi Cavazos",
+      "character": "Inez",
+      "order": 3
+    },
+    {
+      "name": "James Caan",
+      "character": "Mr. Abe Henry",
+      "order": 4
+    },
+    {
+      "name": "Andrew Wilson",
+      "character": "John \"Future Man\" Mapplethorpe",
+      "order": 5
+    },
+    {
+      "name": "Teddy Wilson",
+      "character": "Hector Mapplethorpe",
+      "order": 6
+    },
+    {
+      "name": "Donny Caicedo",
+      "character": "Rocky",
+      "order": 7
+    },
+    {
+      "name": "Ned Dowd",
+      "character": "Dr. Nichols",
+      "order": 8
+    },
+    {
+      "name": "Jenni Tooley",
+      "character": "Stacy Sinclair",
+      "order": 9
+    },
+    {
+      "name": "Shea Fowler",
+      "character": "Grace",
+      "order": 10
+    },
+    {
+      "name": "Kumar Pallana",
+      "character": "Kumar",
+      "order": 11
+    }
+  ]
 }

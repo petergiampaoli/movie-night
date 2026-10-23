@@ -23,5 +23,67 @@
   "tmdbId": 128,
   "imdbId": "tt0119698",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:45.437Z"
+  "fetchedAt": "2026-10-16T02:45:45.437Z",
+  "cast": [
+    {
+      "name": "Yoji Matsuda",
+      "character": "Ashitaka (voice)",
+      "order": 0
+    },
+    {
+      "name": "Yuriko Ishida",
+      "character": "San / Kaya (voice)",
+      "order": 1
+    },
+    {
+      "name": "Yuko Tanaka",
+      "character": "Eboshi Gozen (voice)",
+      "order": 2
+    },
+    {
+      "name": "Kaoru Kobayashi",
+      "character": "Jikobo (voice)",
+      "order": 3
+    },
+    {
+      "name": "Masahiko Nishimura",
+      "character": "Kouroku (voice)",
+      "order": 4
+    },
+    {
+      "name": "Tsunehiko Kamijô",
+      "character": "Gonza (voice)",
+      "order": 5
+    },
+    {
+      "name": "Akihiro Miwa",
+      "character": "Mrs. Moro (voice)",
+      "order": 6
+    },
+    {
+      "name": "Mitsuko Mori",
+      "character": "Mrs. Hii (voice)",
+      "order": 7
+    },
+    {
+      "name": "Hisaya Morishige",
+      "character": "Chief of Affairs (voice)",
+      "order": 8
+    },
+    {
+      "name": "Sumi Shimamoto",
+      "character": "Toki (voice)",
+      "order": 9
+    },
+    {
+      "name": "Tetsu Watanabe",
+      "character": "Wild Dog (voice)",
+      "order": 10
+    },
+    {
+      "name": "Makoto Satō",
+      "character": "Tatari God (voice)",
+      "order": 11
+    }
+  ]
 }

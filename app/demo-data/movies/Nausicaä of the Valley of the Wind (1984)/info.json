@@ -22,5 +22,67 @@
   "tmdbId": 81,
   "imdbId": "tt0087544",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:38.949Z"
+  "fetchedAt": "2026-10-16T02:45:38.949Z",
+  "cast": [
+    {
+      "name": "Sumi Shimamoto",
+      "character": "Nausicaä (voice)",
+      "order": 0
+    },
+    {
+      "name": "Ichiro Nagai",
+      "character": "Mito (voice)",
+      "order": 1
+    },
+    {
+      "name": "Gorō Naya",
+      "character": "Yupa (voice)",
+      "order": 2
+    },
+    {
+      "name": "Yoji Matsuda",
+      "character": "Asbel (voice)",
+      "order": 3
+    },
+    {
+      "name": "Yoshiko Sakakibara",
+      "character": "Kushana (voice)",
+      "order": 4
+    },
+    {
+      "name": "Iemasa Kayumi",
+      "character": "Kurotowa (voice)",
+      "order": 5
+    },
+    {
+      "name": "Hisako Kyoda",
+      "character": "Obaba (voice)",
+      "order": 6
+    },
+    {
+      "name": "Mahito Tsujimura",
+      "character": "Jihl (voice)",
+      "order": 7
+    },
+    {
+      "name": "Mina Tominaga",
+      "character": "Lastel (voice)",
+      "order": 8
+    },
+    {
+      "name": "Kohei Miyauchi",
+      "character": "Gol (voice)",
+      "order": 9
+    },
+    {
+      "name": "Joji Yanami",
+      "character": "Gikkuri (voice)",
+      "order": 10
+    },
+    {
+      "name": "Minoru Yada",
+      "character": "Niga (voice)",
+      "order": 11
+    }
+  ]
 }

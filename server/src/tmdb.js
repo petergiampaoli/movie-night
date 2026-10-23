@@ -57,6 +57,15 @@ class Tmdb {
     const directors = ((d.credits && d.credits.crew) || [])
       .filter((c) => c.job === "Director")
       .map((c) => c.name);
+    // Top billed cast, in TMDB billing order — surfaced for search + the modal.
+    const cast = ((d.credits && d.credits.cast) || [])
+      .filter((c) => c && c.name)
+      .slice(0, 12)
+      .map((c) => ({
+        name: c.name,
+        character: c.character || null,
+        order: typeof c.order === "number" ? c.order : null,
+      }));
     const studios = (d.production_companies || []).map((c) => c.name);
     return {
       title: d.title || title,
@@ -68,6 +77,7 @@ class Tmdb {
       genres: (d.genres || []).map((g) => g.name),
       runtime: typeof d.runtime === "number" ? d.runtime : null,
       directors,
+      cast,
       studios,
       tmdbId: d.id || null,
       imdbId: d.imdb_id || null,

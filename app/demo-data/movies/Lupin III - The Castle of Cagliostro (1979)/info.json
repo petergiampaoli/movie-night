@@ -22,5 +22,67 @@
   "tmdbId": 15371,
   "imdbId": "tt0079833",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:37.683Z"
+  "fetchedAt": "2026-10-16T02:45:37.683Z",
+  "cast": [
+    {
+      "name": "Yasuo Yamada",
+      "character": "Arsène Lupin III (voice)",
+      "order": 0
+    },
+    {
+      "name": "Kiyoshi Kobayashi",
+      "character": "Daisuke Jigen (voice)",
+      "order": 1
+    },
+    {
+      "name": "Eiko Masuyama",
+      "character": "Fujiko Mine (voice)",
+      "order": 2
+    },
+    {
+      "name": "Makio Inoue",
+      "character": "Goemon Ishikawa XIII (voice)",
+      "order": 3
+    },
+    {
+      "name": "Gorō Naya",
+      "character": "Inspector Koichi Zenigata (voice)",
+      "order": 4
+    },
+    {
+      "name": "Sumi Shimamoto",
+      "character": "Lady Clarisse de Cagliostro (voice)",
+      "order": 5
+    },
+    {
+      "name": "Taro Ishida",
+      "character": "Count Cagliostro (voice)",
+      "order": 6
+    },
+    {
+      "name": "Kohei Miyauchi",
+      "character": "Gardener (voice)",
+      "order": 7
+    },
+    {
+      "name": "Ichiro Nagai",
+      "character": "Jodo (voice)",
+      "order": 8
+    },
+    {
+      "name": "Tadamichi Tsuneizumi",
+      "character": "Gustav (voice)",
+      "order": 9
+    },
+    {
+      "name": "Kinpei Azusa",
+      "character": "Archbishop (voice)",
+      "order": 10
+    },
+    {
+      "name": "Eken Mine",
+      "character": "Archbishop's Driver (voice)",
+      "order": 11
+    }
+  ]
 }

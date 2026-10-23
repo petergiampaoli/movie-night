@@ -28,5 +28,67 @@
   "tmdbId": 149870,
   "imdbId": "tt2013293",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:50.792Z"
+  "fetchedAt": "2026-10-16T02:45:50.792Z",
+  "cast": [
+    {
+      "name": "Hideaki Anno",
+      "character": "Jiro Horikoshi (voice)",
+      "order": 0
+    },
+    {
+      "name": "Hidetoshi Nishijima",
+      "character": "Honjô (voice)",
+      "order": 1
+    },
+    {
+      "name": "Miori Takimoto",
+      "character": "Naoko Satomi (voice)",
+      "order": 2
+    },
+    {
+      "name": "Masahiko Nishimura",
+      "character": "Kurokawa (voice)",
+      "order": 3
+    },
+    {
+      "name": "Stephen Alpert",
+      "character": "Castorp (voice)",
+      "order": 4
+    },
+    {
+      "name": "Mansai Nomura",
+      "character": "Giovanni Battista (voice)",
+      "order": 5
+    },
+    {
+      "name": "Jun Kunimura",
+      "character": "Hattori (voice)",
+      "order": 6
+    },
+    {
+      "name": "Mirai Shida",
+      "character": "Kayo Horikoshi (voice)",
+      "order": 7
+    },
+    {
+      "name": "Shinobu Otake",
+      "character": "Mrs. Kurokawa (voice)",
+      "order": 8
+    },
+    {
+      "name": "Morio Kazama",
+      "character": "Satomi (voice)",
+      "order": 9
+    },
+    {
+      "name": "Keiko Takeshita",
+      "character": "Jirô's mother (voice)",
+      "order": 10
+    },
+    {
+      "name": "Sascha",
+      "character": "German Security Guard / Flight Engineer (voice)",
+      "order": 11
+    }
+  ]
 }

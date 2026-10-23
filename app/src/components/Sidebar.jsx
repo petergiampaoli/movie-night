@@ -38,6 +38,14 @@ export function Sidebar({ open, selection, onSelect, counts, collections, genres
         </button>
         <div className="sidebar-heading">Library</div>
         <button
+          className={"nav-item" + (isActive(selection, "view", "all") ? " active" : "")}
+          onClick={() => pick({ type: "view", value: "all" })}
+        >
+          <span className="nav-icon">🎞️</span>
+          <span className="nav-label">All</span>
+          <span className="nav-count">{counts.all}</span>
+        </button>
+        <button
           className={"nav-item" + (isActive(selection, "view", "films") ? " active" : "")}
           onClick={() => pick({ type: "view", value: "films" })}
         >

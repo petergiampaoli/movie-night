@@ -21,5 +21,67 @@
   "tmdbId": 421,
   "imdbId": "tt0362270",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:26.146Z"
+  "fetchedAt": "2026-10-16T02:45:26.146Z",
+  "cast": [
+    {
+      "name": "Bill Murray",
+      "character": "Steve Zissou",
+      "order": 0
+    },
+    {
+      "name": "Owen Wilson",
+      "character": "Ned Plimpton",
+      "order": 1
+    },
+    {
+      "name": "Cate Blanchett",
+      "character": "Jane Winslett-Richardson",
+      "order": 2
+    },
+    {
+      "name": "Anjelica Huston",
+      "character": "Eleanor Zissou",
+      "order": 3
+    },
+    {
+      "name": "Willem Dafoe",
+      "character": "Klaus Daimler",
+      "order": 4
+    },
+    {
+      "name": "Jeff Goldblum",
+      "character": "Alistair Hennessey",
+      "order": 5
+    },
+    {
+      "name": "Michael Gambon",
+      "character": "Oseary Drakoulias",
+      "order": 6
+    },
+    {
+      "name": "Noah Taylor",
+      "character": "Vladimir Wolodarsky",
+      "order": 7
+    },
+    {
+      "name": "Bud Cort",
+      "character": "Bill Ubell",
+      "order": 8
+    },
+    {
+      "name": "Seu Jorge",
+      "character": "Pelé dos Santos",
+      "order": 9
+    },
+    {
+      "name": "Robyn Cohen",
+      "character": "Anne-Marie Sakowitz",
+      "order": 10
+    },
+    {
+      "name": "Waris Ahluwalia",
+      "character": "Vikram Ray",
+      "order": 11
+    }
+  ]
 }

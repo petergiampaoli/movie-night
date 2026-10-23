@@ -20,5 +20,67 @@
   "tmdbId": 508883,
   "imdbId": "tt6587046",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:52.086Z"
+  "fetchedAt": "2026-10-16T02:45:52.086Z",
+  "cast": [
+    {
+      "name": "Soma Santoki",
+      "character": "Mahito Maki (voice)",
+      "order": 0
+    },
+    {
+      "name": "Masaki Suda",
+      "character": "Gray Heron (voice)",
+      "order": 1
+    },
+    {
+      "name": "Ko Shibasaki",
+      "character": "Kiriko (voice)",
+      "order": 2
+    },
+    {
+      "name": "Aimyon",
+      "character": "Lady Himi (voice)",
+      "order": 3
+    },
+    {
+      "name": "Yoshino Kimura",
+      "character": "Natsuko (voice)",
+      "order": 4
+    },
+    {
+      "name": "Takuya Kimura",
+      "character": "Shoichi Maki (voice)",
+      "order": 5
+    },
+    {
+      "name": "Keiko Takeshita",
+      "character": "Izumi (voice)",
+      "order": 6
+    },
+    {
+      "name": "Jun Fubuki",
+      "character": "Utako (voice)",
+      "order": 7
+    },
+    {
+      "name": "Sawako Agawa",
+      "character": "Eriko (voice)",
+      "order": 8
+    },
+    {
+      "name": "Karen Takizawa",
+      "character": "Warawara (voice)",
+      "order": 9
+    },
+    {
+      "name": "Shinobu Otake",
+      "character": "Aiko (voice)",
+      "order": 10
+    },
+    {
+      "name": "Jun Kunimura",
+      "character": "The Parakeet King (voice)",
+      "order": 11
+    }
+  ]
 }

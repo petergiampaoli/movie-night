@@ -24,5 +24,67 @@
   "tmdbId": 11621,
   "imdbId": "tt0104652",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:44.131Z"
+  "fetchedAt": "2026-10-16T02:45:44.131Z",
+  "cast": [
+    {
+      "name": "Shūichirō Moriyama",
+      "character": "Kurenai no Buta (voice)",
+      "order": 0
+    },
+    {
+      "name": "Tokiko Kato",
+      "character": "Jina-sama (voice)",
+      "order": 1
+    },
+    {
+      "name": "Bunshi Katsura VI",
+      "character": "Pikkoro-oyaji (voice)",
+      "order": 2
+    },
+    {
+      "name": "Tsunehiko Kamijô",
+      "character": "Manmayuto no shachô (voice)",
+      "order": 3
+    },
+    {
+      "name": "Akemi Okamura",
+      "character": "Fio Pikkoro (voice)",
+      "order": 4
+    },
+    {
+      "name": "Akio Otsuka",
+      "character": "Donarudo Kâchisu (voice)",
+      "order": 5
+    },
+    {
+      "name": "Hiroko Seki",
+      "character": "Bâ-chan (voice)",
+      "order": 6
+    },
+    {
+      "name": "Reizō Nomoto",
+      "character": "Mamma Aiuto Gang (voice)",
+      "order": 7
+    },
+    {
+      "name": "Osamu Saka",
+      "character": "Mamma Aiuto Gang (voice)",
+      "order": 8
+    },
+    {
+      "name": "Yu Shimaka",
+      "character": "Mamma Aiuto Gang (voice)",
+      "order": 9
+    },
+    {
+      "name": "Mahito Tsujimura",
+      "character": "(voice)",
+      "order": 10
+    },
+    {
+      "name": "Minoru Yada",
+      "character": "(voice)",
+      "order": 11
+    }
+  ]
 }

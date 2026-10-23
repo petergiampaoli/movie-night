@@ -26,5 +26,67 @@
   "tmdbId": 129,
   "imdbId": "tt0245429",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:46.909Z"
+  "fetchedAt": "2026-10-16T02:45:46.909Z",
+  "cast": [
+    {
+      "name": "Rumi Hiiragi",
+      "character": "Chihiro (voice)",
+      "order": 0
+    },
+    {
+      "name": "Miyu Irino",
+      "character": "Haku (voice)",
+      "order": 1
+    },
+    {
+      "name": "Mari Natsuki",
+      "character": "Yubaba / Zeniba (voice)",
+      "order": 2
+    },
+    {
+      "name": "Takashi Naito",
+      "character": "Father (voice)",
+      "order": 3
+    },
+    {
+      "name": "Yasuko Sawaguchi",
+      "character": "Mother (voice)",
+      "order": 4
+    },
+    {
+      "name": "Tatsuya Gashuin",
+      "character": "Aogaeru (voice)",
+      "order": 5
+    },
+    {
+      "name": "Ryunosuke Kamiki",
+      "character": "Boh (voice)",
+      "order": 6
+    },
+    {
+      "name": "Yumi Tamai",
+      "character": "Rin (voice)",
+      "order": 7
+    },
+    {
+      "name": "Yo Oizumi",
+      "character": "Bandai Frog (voice)",
+      "order": 8
+    },
+    {
+      "name": "Koba Hayashi",
+      "character": "River Spirit (voice)",
+      "order": 9
+    },
+    {
+      "name": "Tsunehiko Kamijô",
+      "character": "Chichiyaku (voice)",
+      "order": 10
+    },
+    {
+      "name": "Takehiko Ono",
+      "character": "Aniyaku (voice)",
+      "order": 11
+    }
+  ]
 }

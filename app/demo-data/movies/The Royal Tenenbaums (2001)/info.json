@@ -20,5 +20,67 @@
   "tmdbId": 9428,
   "imdbId": "tt0265666",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:24.850Z"
+  "fetchedAt": "2026-10-16T02:45:24.850Z",
+  "cast": [
+    {
+      "name": "Gene Hackman",
+      "character": "Royal Tenenbaum",
+      "order": 0
+    },
+    {
+      "name": "Anjelica Huston",
+      "character": "Etheline Tenenbaum",
+      "order": 1
+    },
+    {
+      "name": "Ben Stiller",
+      "character": "Chas Tenenbaum",
+      "order": 2
+    },
+    {
+      "name": "Gwyneth Paltrow",
+      "character": "Margot Tenenbaum",
+      "order": 3
+    },
+    {
+      "name": "Luke Wilson",
+      "character": "Richie Tenenbaum",
+      "order": 4
+    },
+    {
+      "name": "Owen Wilson",
+      "character": "Eli Cash",
+      "order": 5
+    },
+    {
+      "name": "Bill Murray",
+      "character": "Raleigh St. Clair",
+      "order": 6
+    },
+    {
+      "name": "Danny Glover",
+      "character": "Henry Sherman",
+      "order": 7
+    },
+    {
+      "name": "Seymour Cassel",
+      "character": "Dusty",
+      "order": 8
+    },
+    {
+      "name": "Kumar Pallana",
+      "character": "Pagoda",
+      "order": 9
+    },
+    {
+      "name": "Alec Baldwin",
+      "character": "Narrator (voice)",
+      "order": 10
+    },
+    {
+      "name": "Grant Rosenmeyer",
+      "character": "Ari Tenenbaum",
+      "order": 11
+    }
+  ]
 }

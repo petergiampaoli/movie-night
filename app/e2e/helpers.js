@@ -50,7 +50,7 @@ async function openLibrary(page) {
   await connectToServer(page);
 }
 
-const NAV_ITEMS = ["Films", "Series", "New", "Favorites"];
+const NAV_ITEMS = ["All", "Films", "Series", "New", "Favorites"];
 const SMART_SECTIONS = ["Smart Collections", "Smart Genres"];
 
 // The sidebar is open by default; make sure it is before interacting.

@@ -23,5 +23,67 @@
   "tmdbId": 10315,
   "imdbId": "tt0432283",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:28.751Z"
+  "fetchedAt": "2026-10-16T02:45:28.751Z",
+  "cast": [
+    {
+      "name": "George Clooney",
+      "character": "Mr. Fox (voice)",
+      "order": 0
+    },
+    {
+      "name": "Meryl Streep",
+      "character": "Mrs. Fox (voice)",
+      "order": 1
+    },
+    {
+      "name": "Jason Schwartzman",
+      "character": "Ash Fox (voice)",
+      "order": 2
+    },
+    {
+      "name": "Eric Chase Anderson",
+      "character": "Kristofferson Silverfox (voice)",
+      "order": 3
+    },
+    {
+      "name": "Wallace Wolodarsky",
+      "character": "Kylie (voice)",
+      "order": 4
+    },
+    {
+      "name": "Willem Dafoe",
+      "character": "Rat (voice)",
+      "order": 5
+    },
+    {
+      "name": "Michael Gambon",
+      "character": "Franklin Bean (voice)",
+      "order": 6
+    },
+    {
+      "name": "Robin Hurlstone",
+      "character": "Walter Boggis (voice)",
+      "order": 7
+    },
+    {
+      "name": "Hugo Guinness",
+      "character": "Nathan Bunce (voice)",
+      "order": 8
+    },
+    {
+      "name": "Bill Murray",
+      "character": "Clive Badger (voice)",
+      "order": 9
+    },
+    {
+      "name": "Helen McCrory",
+      "character": "Mrs. Bean (voice)",
+      "order": 10
+    },
+    {
+      "name": "Wes Anderson",
+      "character": "Stan Weasel (voice)",
+      "order": 11
+    }
+  ]
 }

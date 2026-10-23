@@ -26,5 +26,67 @@
   "tmdbId": 4935,
   "imdbId": "tt0347149",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:48.217Z"
+  "fetchedAt": "2026-10-16T02:45:48.217Z",
+  "cast": [
+    {
+      "name": "Chieko Baisho",
+      "character": "Sophie (voice)",
+      "order": 0
+    },
+    {
+      "name": "Takuya Kimura",
+      "character": "Howl (voice)",
+      "order": 1
+    },
+    {
+      "name": "Akihiro Miwa",
+      "character": "Witch of the Waste (voice)",
+      "order": 2
+    },
+    {
+      "name": "Tatsuya Gashuin",
+      "character": "Calcifer (voice)",
+      "order": 3
+    },
+    {
+      "name": "Ryunosuke Kamiki",
+      "character": "Markl (voice)",
+      "order": 4
+    },
+    {
+      "name": "Mitsunori Isaki",
+      "character": "Kosho (voice)",
+      "order": 5
+    },
+    {
+      "name": "Yo Oizumi",
+      "character": "Prince Justin / Turnip Head (voice)",
+      "order": 6
+    },
+    {
+      "name": "Akio Otsuka",
+      "character": "King of Ingary (voice)",
+      "order": 7
+    },
+    {
+      "name": "Daijirō Harada",
+      "character": "Heen (voice)",
+      "order": 8
+    },
+    {
+      "name": "Haruko Katō",
+      "character": "Madame Suliman (voice)",
+      "order": 9
+    },
+    {
+      "name": "Makoto Yasumura",
+      "character": "(voice)",
+      "order": 10
+    },
+    {
+      "name": "Manabu Muraji",
+      "character": "(voice)",
+      "order": 11
+    }
+  ]
 }

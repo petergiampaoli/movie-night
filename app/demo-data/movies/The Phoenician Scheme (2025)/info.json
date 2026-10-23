@@ -22,5 +22,67 @@
   "tmdbId": 1137350,
   "imdbId": "tt30840798",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:36.405Z"
+  "fetchedAt": "2026-10-16T02:45:36.405Z",
+  "cast": [
+    {
+      "name": "Benicio del Toro",
+      "character": "Zsa-zsa Korda",
+      "order": 0
+    },
+    {
+      "name": "Mia Threapleton",
+      "character": "Sister Liesl",
+      "order": 1
+    },
+    {
+      "name": "Michael Cera",
+      "character": "Bjorn Lund",
+      "order": 2
+    },
+    {
+      "name": "Riz Ahmed",
+      "character": "Prince Farouk",
+      "order": 3
+    },
+    {
+      "name": "Tom Hanks",
+      "character": "Leland",
+      "order": 4
+    },
+    {
+      "name": "Bryan Cranston",
+      "character": "Reagan",
+      "order": 5
+    },
+    {
+      "name": "Mathieu Amalric",
+      "character": "Marseille Bob",
+      "order": 6
+    },
+    {
+      "name": "Richard Ayoade",
+      "character": "Sergio",
+      "order": 7
+    },
+    {
+      "name": "Benedict Cumberbatch",
+      "character": "Uncle Nubar",
+      "order": 8
+    },
+    {
+      "name": "Jeffrey Wright",
+      "character": "Marty",
+      "order": 9
+    },
+    {
+      "name": "Scarlett Johansson",
+      "character": "Cousin Hilda",
+      "order": 10
+    },
+    {
+      "name": "Rupert Friend",
+      "character": "Excalibur",
+      "order": 11
+    }
+  ]
 }

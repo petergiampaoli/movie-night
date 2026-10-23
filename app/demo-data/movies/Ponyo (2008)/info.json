@@ -26,5 +26,67 @@
   "tmdbId": 12429,
   "imdbId": "tt0876563",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:49.517Z"
+  "fetchedAt": "2026-10-16T02:45:49.517Z",
+  "cast": [
+    {
+      "name": "Yuria Kozuki",
+      "character": "Ponyo (voice)",
+      "order": 0
+    },
+    {
+      "name": "Hiroki Doi",
+      "character": "Sosuke (voice)",
+      "order": 1
+    },
+    {
+      "name": "George Tokoro",
+      "character": "Fujimoto (voice)",
+      "order": 2
+    },
+    {
+      "name": "Tomoko Yamaguchi",
+      "character": "Risa (voice)",
+      "order": 3
+    },
+    {
+      "name": "Yuki Amami",
+      "character": "Gran Mamare (voice)",
+      "order": 4
+    },
+    {
+      "name": "Kazushige Nagashima",
+      "character": "Koichi (voice)",
+      "order": 5
+    },
+    {
+      "name": "Akiko Yano",
+      "character": "Ponyo's Sister (voice)",
+      "order": 6
+    },
+    {
+      "name": "Shin'ichi Hatori",
+      "character": "Anchorman (voice)",
+      "order": 7
+    },
+    {
+      "name": "Tokie Hidari",
+      "character": "Kayo (voice)",
+      "order": 8
+    },
+    {
+      "name": "Rumi Hiiragi",
+      "character": "Young Mother (voice)",
+      "order": 9
+    },
+    {
+      "name": "Tomoko Naraoka",
+      "character": "Yoshie (voice)",
+      "order": 10
+    },
+    {
+      "name": "Kazuko Yoshiyuki",
+      "character": "Toki (voice)",
+      "order": 11
+    }
+  ]
 }

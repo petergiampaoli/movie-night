@@ -66,5 +66,47 @@
       "overview": "Finn and Jake are excited to meet the Nice King who has come to Ooo. They soon realize that he looks suspiciously like someone else they know; the Ice King.",
       "airDate": "2010-10-25"
     }
+  ],
+  "cast": [
+    {
+      "name": "Jeremy Shada",
+      "character": "Finn the Human (voice)",
+      "order": 0
+    },
+    {
+      "name": "John DiMaggio",
+      "character": "Jake the Dog (voice)",
+      "order": 1
+    },
+    {
+      "name": "Tom Kenny",
+      "character": "Ice King (voice)",
+      "order": 2
+    },
+    {
+      "name": "Hynden Walch",
+      "character": "Princess Bubblegum (voice)",
+      "order": 3
+    },
+    {
+      "name": "Olivia Olson",
+      "character": "Marceline the Vampire Queen (voice)",
+      "order": 4
+    },
+    {
+      "name": "Niki Yang",
+      "character": "BMO / Lady Rainicorn (voice)",
+      "order": 5
+    },
+    {
+      "name": "Pendleton Ward",
+      "character": "Lumpy Space Princess (voice)",
+      "order": 6
+    },
+    {
+      "name": "Polly Lou Livingston",
+      "character": "Tree Trunks (voice)",
+      "order": 8
+    }
   ]
 }

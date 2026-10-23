@@ -20,5 +20,67 @@
   "tmdbId": 11545,
   "imdbId": "tt0128445",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:23.532Z"
+  "fetchedAt": "2026-10-16T02:45:23.532Z",
+  "cast": [
+    {
+      "name": "Jason Schwartzman",
+      "character": "Max Fischer",
+      "order": 0
+    },
+    {
+      "name": "Bill Murray",
+      "character": "Herman Blume",
+      "order": 1
+    },
+    {
+      "name": "Olivia Williams",
+      "character": "Rosemary Cross",
+      "order": 2
+    },
+    {
+      "name": "Seymour Cassel",
+      "character": "Bert Fischer",
+      "order": 3
+    },
+    {
+      "name": "Brian Cox",
+      "character": "Dr. Nelson Guggenheim",
+      "order": 4
+    },
+    {
+      "name": "Mason Gamble",
+      "character": "Dirk Calloway",
+      "order": 5
+    },
+    {
+      "name": "Sara Tanaka",
+      "character": "Margaret Yang",
+      "order": 6
+    },
+    {
+      "name": "Stephen McCole",
+      "character": "Magnus Buchan",
+      "order": 7
+    },
+    {
+      "name": "Luke Wilson",
+      "character": "Dr. Peter Flynn",
+      "order": 8
+    },
+    {
+      "name": "Dipak Pallana",
+      "character": "Mr. Adams",
+      "order": 9
+    },
+    {
+      "name": "Andrew Wilson",
+      "character": "Coach Beck",
+      "order": 10
+    },
+    {
+      "name": "Marietta Marich",
+      "character": "Mrs. Guggenheim",
+      "order": 11
+    }
+  ]
 }

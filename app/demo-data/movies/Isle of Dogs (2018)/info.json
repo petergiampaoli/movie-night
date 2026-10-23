@@ -23,5 +23,67 @@
   "tmdbId": 399174,
   "imdbId": "tt5104604",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:32.569Z"
+  "fetchedAt": "2026-10-16T02:45:32.569Z",
+  "cast": [
+    {
+      "name": "Bryan Cranston",
+      "character": "Chief (voice)",
+      "order": 0
+    },
+    {
+      "name": "Koyu Rankin",
+      "character": "Atari Kobayashi (voice)",
+      "order": 1
+    },
+    {
+      "name": "Bob Balaban",
+      "character": "King (voice)",
+      "order": 2
+    },
+    {
+      "name": "Edward Norton",
+      "character": "Rex (voice)",
+      "order": 3
+    },
+    {
+      "name": "Bill Murray",
+      "character": "Boss (voice)",
+      "order": 4
+    },
+    {
+      "name": "Jeff Goldblum",
+      "character": "Duke (voice)",
+      "order": 5
+    },
+    {
+      "name": "Kunichi Nomura",
+      "character": "Mayor Kobayashi (voice)",
+      "order": 6
+    },
+    {
+      "name": "Fisher Stevens",
+      "character": "Scrap (voice)",
+      "order": 7
+    },
+    {
+      "name": "Akira Takayama",
+      "character": "Major Domo (voice)",
+      "order": 8
+    },
+    {
+      "name": "Greta Gerwig",
+      "character": "Tracy Walker (voice)",
+      "order": 9
+    },
+    {
+      "name": "Ken Watanabe",
+      "character": "Head Surgeon (voice)",
+      "order": 10
+    },
+    {
+      "name": "Frances McDormand",
+      "character": "Interpreter Nelson (voice)",
+      "order": 11
+    }
+  ]
 }

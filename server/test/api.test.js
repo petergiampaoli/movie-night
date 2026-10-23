@@ -52,6 +52,11 @@ const fakeTmdb = {
     voteCount: 1234,
     genres: ["Comedy", "Drama"],
     runtime: 104,
+    directors: ["Wes Anderson"],
+    cast: [
+      { name: "Jason Schwartzman", character: "Ash", order: 0 },
+      { name: "Scarlett Johansson", character: "Midge", order: 1 },
+    ],
     tmdbId: 715931,
     imdbId: "tt14230388",
     posterPath: "/poster.jpg",
@@ -121,6 +126,12 @@ test("meta writes sidecar info.json + poster after user confirmation", async (t)
   assert.equal(body.movie.hasInfo, true);
   assert.equal(body.movie.title, "Asteroid City");
   assert.equal(body.movie.imdbId, "tt14230388");
+  assert.deepEqual(body.movie.directors, ["Wes Anderson"]);
+  assert.deepEqual(
+    body.movie.cast.map((c) => c.name),
+    ["Jason Schwartzman", "Scarlett Johansson"],
+    "top billed cast is surfaced for search + the modal"
+  );
 
   const fresh = (await (await fetch(`${t.baseUrl}/api/movies/${id}`)).json()).movie;
   assert.equal(fresh.hasPoster, true);

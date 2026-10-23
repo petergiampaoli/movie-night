@@ -22,5 +22,67 @@
   "tmdbId": 4538,
   "imdbId": "tt0838221",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:27.450Z"
+  "fetchedAt": "2026-10-16T02:45:27.450Z",
+  "cast": [
+    {
+      "name": "Owen Wilson",
+      "character": "Francis",
+      "order": 0
+    },
+    {
+      "name": "Adrien Brody",
+      "character": "Peter",
+      "order": 1
+    },
+    {
+      "name": "Jason Schwartzman",
+      "character": "Jack",
+      "order": 2
+    },
+    {
+      "name": "Amara Karan",
+      "character": "Rita",
+      "order": 3
+    },
+    {
+      "name": "Wallace Wolodarsky",
+      "character": "Brendan",
+      "order": 4
+    },
+    {
+      "name": "Waris Ahluwalia",
+      "character": "The Chief Steward",
+      "order": 5
+    },
+    {
+      "name": "Irrfan Khan",
+      "character": "The Father",
+      "order": 6
+    },
+    {
+      "name": "Barbet Schroeder",
+      "character": "The Mechanic",
+      "order": 7
+    },
+    {
+      "name": "Camilla Rutherford",
+      "character": "Alice",
+      "order": 8
+    },
+    {
+      "name": "Bill Murray",
+      "character": "The Businessman",
+      "order": 9
+    },
+    {
+      "name": "Anjelica Huston",
+      "character": "Patricia",
+      "order": 10
+    },
+    {
+      "name": "A. P. Singh",
+      "character": "Taxi Driver",
+      "order": 11
+    }
+  ]
 }

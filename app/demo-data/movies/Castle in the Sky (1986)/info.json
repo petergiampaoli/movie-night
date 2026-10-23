@@ -23,5 +23,67 @@
   "tmdbId": 10515,
   "imdbId": "tt0092067",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:40.233Z"
+  "fetchedAt": "2026-10-16T02:45:40.233Z",
+  "cast": [
+    {
+      "name": "Keiko Yokozawa",
+      "character": "Sheeta (voice)",
+      "order": 0
+    },
+    {
+      "name": "Mayumi Tanaka",
+      "character": "Pazu (voice)",
+      "order": 1
+    },
+    {
+      "name": "Minori Terada",
+      "character": "Muska (voice)",
+      "order": 2
+    },
+    {
+      "name": "Kotoe Hatsui",
+      "character": "Dola (voice)",
+      "order": 3
+    },
+    {
+      "name": "Fujio Tokita",
+      "character": "Uncle Pomme (voice)",
+      "order": 4
+    },
+    {
+      "name": "Ichiro Nagai",
+      "character": "Shogun Mouro (voice)",
+      "order": 5
+    },
+    {
+      "name": "Hiroshi Ito",
+      "character": "Oyakata (voice)",
+      "order": 6
+    },
+    {
+      "name": "Machiko Washio",
+      "character": "Okami (voice)",
+      "order": 7
+    },
+    {
+      "name": "Takuzō Kamiyama",
+      "character": "Charles / Shalulu (voice)",
+      "order": 8
+    },
+    {
+      "name": "Yoshito Yasuhara",
+      "character": "Louis (voice)",
+      "order": 9
+    },
+    {
+      "name": "Sukekiyo Kameyama",
+      "character": "Henri (voice)",
+      "order": 10
+    },
+    {
+      "name": "Eken Mine",
+      "character": "Underling (voice)",
+      "order": 11
+    }
+  ]
 }

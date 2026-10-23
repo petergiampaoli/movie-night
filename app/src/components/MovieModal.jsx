@@ -1,6 +1,17 @@
 import { useEffect, useRef } from "react";
+import { directorList, actorList } from "../viewFilter.mjs";
 
-export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, onToggleWatchlist, onGetInfo, onViewEpisodes }) {
+export function MovieModal({
+  movie,
+  client,
+  onClose,
+  onPlay,
+  onToggleFavorite,
+  onToggleWatchlist,
+  onGetInfo,
+  onViewEpisodes,
+  onSearchPerson,
+}) {
   const backdropRef = useRef(null);
 
   useEffect(() => {
@@ -16,6 +27,12 @@ export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, o
   }, []);
 
   const m = movie;
+  const directors = directorList(m);
+  const cast = actorList(m).slice(0, 8);
+  const people = [
+    ...directors.map((name) => ({ name, role: "Director" })),
+    ...cast.map((name) => ({ name, role: "Cast" })),
+  ];
   const posterInline = m.posterUrl ? { backgroundImage: `url(${client.abs(m.posterUrl)})` } : {};
   const initials = (m.title || "?")
     .split(/\s+/)
@@ -128,6 +145,43 @@ export function MovieModal({ movie, client, onClose, onPlay, onToggleFavorite, o
               </div>
             )}
           </div>
+
+          {people.length > 0 && (
+            <div className="people">
+              <div className="people-row">
+                <span className="people-label">Director</span>
+                <span className="people-links">
+                  {directors.map((name) => (
+                    <button
+                      key={name}
+                      className="person-chip"
+                      onClick={() => onSearchPerson?.(name)}
+                      title={`Search the library for ${name}`}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </span>
+              </div>
+              {cast.length > 0 && (
+                <div className="people-row">
+                  <span className="people-label">Top billed</span>
+                  <span className="people-links">
+                    {cast.map((name) => (
+                      <button
+                        key={name}
+                        className="person-chip"
+                        onClick={() => onSearchPerson?.(name)}
+                        title={`Search the library for ${name}`}
+                      >
+                        {name}
+                      </button>
+                    ))}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           {m.overview ? (
             <div className="synopsis">

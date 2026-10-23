@@ -21,5 +21,67 @@
   "tmdbId": 83666,
   "imdbId": "tt1748122",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:30.030Z"
+  "fetchedAt": "2026-10-16T02:45:30.030Z",
+  "cast": [
+    {
+      "name": "Jared Gilman",
+      "character": "Sam Shakusky",
+      "order": 0
+    },
+    {
+      "name": "Kara Hayward",
+      "character": "Suzy Bishop",
+      "order": 1
+    },
+    {
+      "name": "Bruce Willis",
+      "character": "Captain Sharp",
+      "order": 2
+    },
+    {
+      "name": "Edward Norton",
+      "character": "Scout Master Ward",
+      "order": 3
+    },
+    {
+      "name": "Bill Murray",
+      "character": "Mr. Bishop",
+      "order": 4
+    },
+    {
+      "name": "Frances McDormand",
+      "character": "Mrs. Bishop",
+      "order": 5
+    },
+    {
+      "name": "Tilda Swinton",
+      "character": "Social Services",
+      "order": 6
+    },
+    {
+      "name": "Jason Schwartzman",
+      "character": "Cousin Ben",
+      "order": 7
+    },
+    {
+      "name": "Bob Balaban",
+      "character": "The Narrator",
+      "order": 8
+    },
+    {
+      "name": "Lucas Hedges",
+      "character": "Redford",
+      "order": 9
+    },
+    {
+      "name": "Charlie Kilgore",
+      "character": "Lazy Eye",
+      "order": 10
+    },
+    {
+      "name": "Harvey Keitel",
+      "character": "Commander Pierce",
+      "order": 11
+    }
+  ]
 }

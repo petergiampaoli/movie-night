@@ -1,6 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "./api";
-import { filterMovies, smartCollections, smartGenres, viewCounts } from "./viewFilter.mjs";
+import {
+  filterMovies,
+  smartCollections,
+  smartGenres,
+  viewCounts,
+  sortMovies,
+  keepsOwnOrder,
+  nextKind,
+  SORTS,
+  DEFAULT_SORT,
+  DEFAULT_DIR,
+  DIR_GLYPHS,
+  DIR_TITLES,
+  KIND_ICONS,
+} from "./viewFilter.mjs";
 import { ConnectScreen } from "./components/ConnectScreen.jsx";
 import { TopBar } from "./components/TopBar.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
@@ -14,7 +28,7 @@ import { Player } from "./components/Player.jsx";
 import { ConfirmDialog } from "./components/ConfirmDialog.jsx";
 import { Toast } from "./components/Toast.jsx";
 
-const DEFAULT_SELECTION = { type: "view", value: "films" };
+const DEFAULT_SELECTION = { type: "view", value: "all" };
 
 function selectionTitle(selection, query) {
   if (query.trim()) return `Results for “${query}”`;
@@ -22,6 +36,7 @@ function selectionTitle(selection, query) {
   if (selection.type === "director") return selection.value;
   if (selection.type === "genre") return selection.value;
   const labels = {
+    all: "All",
     films: "Films",
     series: "Series",
     new: "New",
@@ -39,6 +54,10 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState(DEFAULT_SORT);
+  // Direction caret: null until toggled, then "desc" (▼) on the first click,
+  // "asc" (▲) on the second, toggling after that.
+  const [sortDir, setSortDir] = useState(DEFAULT_DIR);
   const [selection, setSelection] = useState(DEFAULT_SELECTION);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalMovie, setModalMovie] = useState(null);
@@ -248,6 +267,13 @@ export default function App() {
 
   const openModal = (movie) => setModalMovie(movie);
 
+  // Person chips in the title modal run a library search for that name, which
+  // matches titles as well as directors and top billed actors.
+  const searchPerson = (name) => {
+    setModalMovie(null);
+    setQuery(name);
+  };
+
   const openEpisodes = (series) => setEpisodesView(series);
 
   const playEpisode = (episode, series) =>
@@ -258,6 +284,20 @@ export default function App() {
     });
 
   const filtered = useMemo(() => filterMovies(movies, selection, query), [movies, selection, query]);
+  // The sort dropdown orders the grid; chronological views (New / Diary) keep
+  // their own recency order and hide the control.
+  const chronological = keepsOwnOrder(selection);
+  const sorted = useMemo(
+    () => (chronological ? filtered : sortMovies(filtered, sort, sortDir)),
+    [filtered, sort, sortDir, chronological]
+  );
+  // The header icon reflects the current kind view and cycles Films -> Series -> All.
+  const kind =
+    selection?.type === "view" && ["films", "series", "all"].includes(selection.value)
+      ? selection.value
+      : "all";
+  const cycleKind = () => setSelection({ type: "view", value: nextKind(kind) });
+  const toggleDir = () => setSortDir((d) => (d === "desc" ? "asc" : "desc"));
   const collections = useMemo(() => smartCollections(movies), [movies]);
   const genres = useMemo(() => smartGenres(movies, 6), [movies]);
   const allCollections = useMemo(() => smartCollections(movies, { max: Infinity }), [movies]);
@@ -319,15 +359,54 @@ export default function App() {
 
           {movies.length > 0 && (
             <section className="library-section">
-              <h2 className="row-title">
-                {selectionTitle(selection, query)}
-                <span className="count-badge">{filtered.length}</span>
-              </h2>
-              {filtered.length === 0 && !loading ? (
+              <div className="library-header">
+                <h2 className="row-title">
+                  <button
+                    className="kind-icon"
+                    type="button"
+                    onClick={cycleKind}
+                    title="Rotate films, series and all"
+                    aria-label={`Showing ${kind}. Click to switch.`}
+                  >
+                    {KIND_ICONS[kind]}
+                  </button>
+                  {selectionTitle(selection, query)}
+                  <span className="count-badge">{sorted.length}</span>
+                </h2>
+                {!chronological && (
+                  <div className="filter-bar">
+                    <label className="filter-label" htmlFor="sort-select">
+                      Sort
+                    </label>
+                    <select
+                      id="sort-select"
+                      className="filter-select"
+                      value={sort}
+                      onChange={(e) => setSort(e.target.value)}
+                    >
+                      {SORTS.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className={"sort-dir" + (sortDir ? ` ${sortDir}` : "")}
+                      type="button"
+                      onClick={toggleDir}
+                      title={DIR_TITLES[sortDir || "neutral"]}
+                      aria-label="Toggle sort direction"
+                    >
+                      {sortDir ? DIR_GLYPHS[sortDir] : "↕"}
+                    </button>
+                  </div>
+                )}
+              </div>
+              {sorted.length === 0 && !loading ? (
                 <p className="dim">Nothing matches.</p>
               ) : (
                 <div className="grid">
-                  {filtered.map((m) => (
+                  {sorted.map((m) => (
                     <MovieCard
                       key={m.id}
                       movie={m}
@@ -356,6 +435,7 @@ export default function App() {
           onUpdate={setModalMovie}
           onGetInfo={askForMeta}
           onViewEpisodes={openEpisodes}
+          onSearchPerson={searchPerson}
         />
       )}
 

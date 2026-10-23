@@ -23,5 +23,67 @@
   "tmdbId": 16859,
   "imdbId": "tt0097814",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:42.826Z"
+  "fetchedAt": "2026-10-16T02:45:42.826Z",
+  "cast": [
+    {
+      "name": "Minami Takayama",
+      "character": "Kiki / Ursula (voice)",
+      "order": 0
+    },
+    {
+      "name": "Rei Sakuma",
+      "character": "Jiji (voice)",
+      "order": 1
+    },
+    {
+      "name": "Kappei Yamaguchi",
+      "character": "Tombo (voice)",
+      "order": 2
+    },
+    {
+      "name": "Keiko Toda",
+      "character": "Osono (voice)",
+      "order": 3
+    },
+    {
+      "name": "Mieko Nobusawa",
+      "character": "Kokiri (voice)",
+      "order": 4
+    },
+    {
+      "name": "Koichi Miura",
+      "character": "Okino (voice)",
+      "order": 5
+    },
+    {
+      "name": "Haruko Katō",
+      "character": "Old Lady (voice)",
+      "order": 6
+    },
+    {
+      "name": "Hiroko Seki",
+      "character": "Bertha (voice)",
+      "order": 7
+    },
+    {
+      "name": "Yuriko Fuchizaki",
+      "character": "Ketto (voice)",
+      "order": 8
+    },
+    {
+      "name": "Koichi Yamadera",
+      "character": "Bakery Worker / Policeman (voice)",
+      "order": 9
+    },
+    {
+      "name": "Kikuko Inoue",
+      "character": "Maki (voice)",
+      "order": 10
+    },
+    {
+      "name": "Yuko Kobayashi",
+      "character": "Young Senpai Witch (voice)",
+      "order": 11
+    }
+  ]
 }

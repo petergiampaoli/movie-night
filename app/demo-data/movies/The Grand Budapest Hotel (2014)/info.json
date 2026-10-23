@@ -23,5 +23,67 @@
   "tmdbId": 120467,
   "imdbId": "tt2278388",
   "source": "tmdb",
-  "fetchedAt": "2026-10-16T02:45:31.285Z"
+  "fetchedAt": "2026-10-16T02:45:31.285Z",
+  "cast": [
+    {
+      "name": "Ralph Fiennes",
+      "character": "M. Gustave",
+      "order": 0
+    },
+    {
+      "name": "F. Murray Abraham",
+      "character": "Mr. Moustafa",
+      "order": 1
+    },
+    {
+      "name": "Tony Revolori",
+      "character": "Zero",
+      "order": 2
+    },
+    {
+      "name": "Adrien Brody",
+      "character": "Dmitri",
+      "order": 3
+    },
+    {
+      "name": "Willem Dafoe",
+      "character": "Jopling",
+      "order": 4
+    },
+    {
+      "name": "Mathieu Amalric",
+      "character": "Serge X.",
+      "order": 5
+    },
+    {
+      "name": "Jeff Goldblum",
+      "character": "Deputy Kovacs",
+      "order": 6
+    },
+    {
+      "name": "Harvey Keitel",
+      "character": "Ludwig",
+      "order": 7
+    },
+    {
+      "name": "Jude Law",
+      "character": "Young Author",
+      "order": 8
+    },
+    {
+      "name": "Bill Murray",
+      "character": "M. Ivan",
+      "order": 9
+    },
+    {
+      "name": "Edward Norton",
+      "character": "Henckels",
+      "order": 10
+    },
+    {
+      "name": "Saoirse Ronan",
+      "character": "Agatha",
+      "order": 11
+    }
+  ]
 }
